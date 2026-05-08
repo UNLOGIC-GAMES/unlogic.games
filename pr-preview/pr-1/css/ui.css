@@ -1,0 +1,14 @@
+/* Responsive por Orientación */
+@media (orientation: portrait) {
+    .show-landscape { display: none !important; }
+    .show-portrait  { display: flex !important; }
+}
+@media (orientation: landscape) {
+    .show-landscape { display: flex !important; }
+    .show-portrait  { display: none !important; }
+}
+
+/* Ocultar botón BACK siempre */
+#back-btn {
+    display: none !important;
+}
