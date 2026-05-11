@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Policy — Unlogic Games</title>
+    <meta name="description" content="Cookie Policy for unlogic.games — what cookies we use and why.">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/fav.png">
+    <link rel="apple-touch-icon" href="assets/fav.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #000;
+            font-family: 'Inter', sans-serif;
+        }
+        a { color: rgba(255,255,255,0.85); text-underline-offset: 2px; }
+        a:hover { color: #fff; }
+    </style>
+</head>
+
+<body class="text-white/70 min-h-screen flex flex-col items-center px-6 py-12">
+
+    <div class="max-w-2xl w-full">
+
+        <a href="/" class="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/40 hover:text-white/80 mb-10 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Back to site
+        </a>
+
+        <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight mb-2">Cookie Policy</h1>
+        <p class="text-xs text-white/30 mb-10">Last updated: May 11, 2026</p>
+
+        <section class="mb-8">
+            <h2 class="text-sm font-bold text-white/90 uppercase tracking-widest mb-3">What are cookies?</h2>
+            <p class="text-sm leading-relaxed">
+                Cookies are small text files stored on your device when you visit a website.
+                They help the site remember information about your visit, which can make your
+                next visit easier and the site more useful to you.
+            </p>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-sm font-bold text-white/90 uppercase tracking-widest mb-3">Cookies we use</h2>
+            <p class="text-sm leading-relaxed mb-4">
+                This website uses only <strong class="text-white/90">analytics cookies</strong> provided by
+                Google Analytics (Google LLC). We do not use advertising, tracking, or any
+                third-party marketing cookies.
+            </p>
+
+            <div class="overflow-x-auto rounded-lg border border-white/10">
+                <table class="w-full text-xs">
+                    <thead>
+                        <tr class="border-b border-white/10 text-white/50 uppercase tracking-widest">
+                            <th class="text-left p-3">Cookie</th>
+                            <th class="text-left p-3">Provider</th>
+                            <th class="text-left p-3">Purpose</th>
+                            <th class="text-left p-3">Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-white/60">
+                        <tr class="border-b border-white/5">
+                            <td class="p-3 font-mono">_ga</td>
+                            <td class="p-3">Google Analytics</td>
+                            <td class="p-3">Distinguishes unique users</td>
+                            <td class="p-3">2 years</td>
+                        </tr>
+                        <tr class="border-b border-white/5">
+                            <td class="p-3 font-mono">_ga_*</td>
+                            <td class="p-3">Google Analytics</td>
+                            <td class="p-3">Maintains session state</td>
+                            <td class="p-3">2 years</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-sm font-bold text-white/90 uppercase tracking-widest mb-3">Local storage</h2>
+            <p class="text-sm leading-relaxed">
+                We also use your browser's <strong class="text-white/90">localStorage</strong> (not a cookie)
+                to remember your cookie consent choice and to store high scores for the arcade
+                games on this site. This data never leaves your device.
+            </p>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-sm font-bold text-white/90 uppercase tracking-widest mb-3">Your choices</h2>
+            <p class="text-sm leading-relaxed mb-4">
+                When you first visit our site, a banner asks for your consent before any analytics
+                cookies are set. You can change your choice at any time:
+            </p>
+            <button onclick="localStorage.removeItem('cookie-consent'); alert('Preference cleared. Reload the main site to see the banner again.');"
+                class="text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full border border-white/15 text-white/50 hover:text-white/80 hover:border-white/30 transition-all cursor-pointer">
+                Reset cookie preference
+            </button>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-sm font-bold text-white/90 uppercase tracking-widest mb-3">More information</h2>
+            <p class="text-sm leading-relaxed">
+                For questions about this policy, contact us at
+                <a href="mailto:hello@unlogic.games" class="underline">hello@unlogic.games</a>.
+            </p>
+            <p class="text-sm leading-relaxed mt-3">
+                Learn more about how Google uses data:
+                <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer" class="underline">
+                    Google's Privacy & Terms</a>.
+            </p>
+        </section>
+
+        <footer class="border-t border-white/10 pt-6 mt-10 text-xs text-white/25">
+            &copy; 2026 Unlogic Games. All rights reserved.
+        </footer>
+
+    </div>
+
+</body>
+
+</html>

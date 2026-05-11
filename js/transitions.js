@@ -6,6 +6,8 @@
 function startGameTransition() {
     if (currentState !== STATES.MENU) return;
     if (creditsActive) return;
+    // Block game start until cookie consent is resolved
+    if (!localStorage.getItem('cookie-consent')) return;
     initAudio();
 
     // Cycle: pong → arkanoid → invaders → snake → pong

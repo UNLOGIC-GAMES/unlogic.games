@@ -9,14 +9,22 @@
     <link rel="icon" type="image/png" sizes="192x192" href="assets/fav.png">
     <link rel="apple-touch-icon" href="assets/fav.png">
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-EL40F27VS8"></script>
+<!-- Google tag (gtag.js) — loaded only after cookie consent -->
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-EL40F27VS8');
+  function loadGtag() {
+    if (document.getElementById('gtag-script')) return;
+    var s = document.createElement('script');
+    s.id = 'gtag-script';
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=G-EL40F27VS8';
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    window.gtag = gtag;
+    gtag('js', new Date());
+    gtag('config', 'G-EL40F27VS8');
+  }
+  if (localStorage.getItem('cookie-consent') === 'accepted') { loadGtag(); }
 </script>
 
     <!-- External dependencies -->
@@ -162,6 +170,35 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <script src="https://cdn.jsdelivr.net/npm/jzz"></script>
     <script src="https://cdn.jsdelivr.net/npm/jzz-midi-smf"></script>
     <script src="https://cdn.jsdelivr.net/npm/jzz-synth-tiny"></script>
+
+    <!-- Cookie consent banner -->
+    <div id="cookie-banner" class="cookie-banner" style="display:none;">
+        <p>We use cookies for analytics to improve your experience.
+            <a href="cookie-policy.html" target="_blank" rel="noopener">Cookie Policy</a>
+        </p>
+        <div class="cookie-banner-buttons">
+            <button id="cookie-reject" class="cookie-btn cookie-btn-reject">Reject</button>
+            <button id="cookie-accept" class="cookie-btn cookie-btn-accept">Accept</button>
+        </div>
+    </div>
+
+    <script>
+      (function() {
+        var consent = localStorage.getItem('cookie-consent');
+        if (!consent) {
+          document.getElementById('cookie-banner').style.display = '';
+        }
+        document.getElementById('cookie-accept').addEventListener('click', function() {
+          localStorage.setItem('cookie-consent', 'accepted');
+          document.getElementById('cookie-banner').style.display = 'none';
+          loadGtag();
+        });
+        document.getElementById('cookie-reject').addEventListener('click', function() {
+          localStorage.setItem('cookie-consent', 'rejected');
+          document.getElementById('cookie-banner').style.display = 'none';
+        });
+      })();
+    </script>
 
     <!-- JS: load order matters — each file relies on globals from previous ones -->
     <script src="js/config.js"></script>
