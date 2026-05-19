@@ -1,6 +1,9 @@
 // ─── Game Over Logic ──────────────────────────────────────────────────────────
 
 function triggerGameOver(score) {
+    var level = gameMode === 'pong' ? pongLevel : gameMode === 'arkanoid' ? arkanoidLevel : gameMode === 'invaders' ? siLevel : snakeLevel;
+    trackGameOver(gameMode, score, level);
+
     finalScore   = score;
     currentState = STATES.GAME_OVER;
     gameOverTime = Date.now();
@@ -21,6 +24,7 @@ function triggerGameOver(score) {
 function confirmName() {
     const name = nameLetters.map(i => ALPHABET[i]).join('');
     insertHighScore(gameMode, name, finalScore);
+    trackHighScore(gameMode, finalScore, name);
     playSound('confirm');
     gameOverPhase = 'show_scores';
     gameOverTime  = Date.now();

@@ -16,6 +16,8 @@ function startGameTransition() {
     else if (gameMode === 'invaders') gameMode = 'snake';
     else                              gameMode = 'pong';
 
+    trackGameStart(gameMode);
+
     currentState        = STATES.TRANSITION_TO_GAME;
     transitionStartTime = Date.now();
     lastCount           = -1;

@@ -155,6 +155,7 @@ function updateAndDrawInvaders(dt, layout, now) {
             triggerGameOver(siScore);
         } else {
             siLevel++;
+            trackLevelUp('invaders', siLevel);
             document.getElementById('inv-level').innerText = 'LVL ' + siLevel;
             siLevelTransition = Date.now();
             playSound('start');

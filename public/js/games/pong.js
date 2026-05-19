@@ -140,6 +140,7 @@ function updateAndDrawPong(dt, layout, now) {
                 triggerGameOver(pongTotalScore);
             } else {
                 pongLevel++;
+                trackLevelUp('pong', pongLevel);
                 scoreUser = 0;
                 scoreAi   = 0;
                 scoreUserEl.innerText = '0';
