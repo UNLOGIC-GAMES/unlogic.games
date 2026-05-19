@@ -266,6 +266,7 @@ function updateAndDrawArkanoid(dt, layout, now) {
             triggerGameOver(arkanoidScore);
         } else {
             arkanoidLevel++;
+            trackLevelUp('arkanoid', arkanoidLevel);
             document.getElementById('ark-level').innerText = 'LVL ' + arkanoidLevel;
             arkLevelTransition = Date.now();
             playSound('start');
