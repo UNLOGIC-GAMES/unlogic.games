@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>OG Image Generator — Unlogic Games</title>
+<style>
+  body { margin: 0; background: #111; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: sans-serif; color: #fff; }
+  canvas { border: 1px solid #333; }
+  button { margin-top: 20px; padding: 12px 32px; background: #fff; color: #000; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+  p { color: #888; margin-top: 12px; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<canvas id="og" width="1200" height="630"></canvas>
+<button onclick="download()">Download og-share.png</button>
+<p>1200 × 630 px — Open Graph standard</p>
+
+<script>
+const canvas = document.getElementById('og');
+const ctx = canvas.getContext('2d');
+const W = 1200, H = 630;
+
+// Draw background
+ctx.fillStyle = '#000000';
+ctx.fillRect(0, 0, W, H);
+
+// Draw stars
+const numStars = 120;
+ctx.fillStyle = '#ffffff';
+for (let i = 0; i < numStars; i++) {
+    const x = Math.random() * W;
+    const y = Math.random() * H;
+    const size = Math.random() * 1.8 + 0.4;
+    const alpha = Math.random() * 0.5 + 0.1;
+    ctx.globalAlpha = alpha;
+    ctx.beginPath();
+    ctx.arc(x, y, size, 0, Math.PI * 2);
+    ctx.fill();
+}
+ctx.globalAlpha = 1;
+
+// Load logo and draw centered with glow
+const logo = new Image();
+logo.crossOrigin = 'anonymous';
+logo.onload = function() {
+    // Scale logo to ~400px wide, maintain aspect ratio
+    const maxW = 440;
+    const scale = maxW / logo.naturalWidth;
+    const lw = logo.naturalWidth * scale;
+    const lh = logo.naturalHeight * scale;
+    const lx = (W - lw) / 2;
+    const ly = (H - lh) / 2;
+
+    // Glow effect (matches site: brightness(0) invert(1) + shadow)
+    ctx.shadowColor = 'rgba(255, 255, 255, 0.6)';
+    ctx.shadowBlur = 30;
+    ctx.drawImage(logo, lx, ly, lw, lh);
+    // Draw again for stronger glow
+    ctx.shadowBlur = 60;
+    ctx.globalAlpha = 0.5;
+    ctx.drawImage(logo, lx, ly, lw, lh);
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
+};
+logo.src = 'assets/horizontal.png';
+
+function download() {
+    const link = document.createElement('a');
+    link.download = 'og-share.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+}
+</script>
+</body>
+</html>
