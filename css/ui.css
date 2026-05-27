@@ -8,9 +8,12 @@
     .show-portrait  { display: none !important; }
 }
 
-/* Ocultar botón BACK siempre */
+/* Ocultar botón BACK por defecto — se muestra vía JS en dispositivos táctiles */
 #back-btn {
     display: none !important;
+}
+#back-btn.show {
+    display: flex !important;
 }
 
 /* Cookie consent banner */

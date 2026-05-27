@@ -26,6 +26,11 @@ function startGameTransition() {
     uiLayer.style.visibility = 'hidden';
     scoreLayer.style.opacity = '1';
 
+    // Show back button on touch devices (tablets have no wheel to scroll back)
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+        document.getElementById('back-btn').classList.add('show');
+    }
+
     if (gameMode === 'arkanoid') {
         document.getElementById('pong-scores').style.display     = 'none';
         document.getElementById('arkanoid-scores').style.display = 'flex';
@@ -97,6 +102,8 @@ function stopGameTransition() {
     uiLayer.style.opacity    = '1';
     uiLayer.style.visibility = 'visible';
     scoreLayer.style.opacity = '0';
+
+    document.getElementById('back-btn').classList.remove('show');
 
     document.getElementById('pong-info').style.display     = 'none';
     document.getElementById('arkanoid-info').style.display = 'none';

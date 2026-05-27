@@ -87,4 +87,11 @@ function loop() {
 resizeCanvas();
 initInput();
 initCreditsInput();
+
+// Adapt UI text for touch-capable devices (tablets)
+if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+    const instrEl = document.getElementById('landscape-instruction');
+    if (instrEl) instrEl.innerHTML = 'BIG THINGS ARE COMING.<br>FOR NOW, TAP HERE';
+}
+
 requestAnimationFrame(loop);

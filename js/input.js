@@ -195,15 +195,58 @@ function initInput() {
     // ─── Scroll ───────────────────────────────────────────────────────────────
 
     window.addEventListener('wheel', (e) => {
-        if (e.deltaY > 10 && currentState === STATES.MENU && isLandscape) {
+        // Normalize deltaY across browsers:
+        // deltaMode 0 = pixels (Chrome/Safari/Edge ~100+), 1 = lines (Firefox ~3)
+        let dy = e.deltaY;
+        if (e.deltaMode === 1) dy *= 30;  // convert lines to approx. pixels
+
+        if (dy > 10 && currentState === STATES.MENU && isLandscape) {
             unlockAudio();
             startGameTransition();
-        } else if (e.deltaY < -10 && currentState === STATES.PLAYING && isLandscape) {
+        } else if (dy < -10 && currentState === STATES.PLAYING && isLandscape) {
             playSound('hit');
             stopGameTransition();
-        } else if (e.deltaY < -10 && currentState === STATES.GAME_OVER && gameOverPhase === 'show_scores' && isLandscape) {
+        } else if (dy < -10 && currentState === STATES.GAME_OVER && gameOverPhase === 'show_scores' && isLandscape) {
             const elapsed = Date.now() - gameOverTime;
             if (elapsed > 800) stopGameTransition();
+        }
+    }, { passive: true });
+
+    // ─── Swipe gestures (tablet/touch in landscape) ──────────────────────────
+
+    let swipeStartY = null;
+    let swipeStartTime = 0;
+
+    canvas.addEventListener('touchstart', (e) => {
+        if (!isLandscape) return;
+        if (currentState === STATES.MENU || currentState === STATES.PLAYING ||
+            (currentState === STATES.GAME_OVER && gameOverPhase === 'show_scores')) {
+            swipeStartY = e.touches[0].clientY;
+            swipeStartTime = Date.now();
+        }
+    }, { passive: true });
+
+    canvas.addEventListener('touchend', (e) => {
+        if (swipeStartY === null || !isLandscape) return;
+        const swipeEndY = e.changedTouches[0].clientY;
+        const deltaY = swipeEndY - swipeStartY;
+        const elapsed = Date.now() - swipeStartTime;
+        swipeStartY = null;
+
+        // Only count quick swipes (< 300ms) with enough distance (> 50px)
+        if (elapsed > 300 || Math.abs(deltaY) < 50) return;
+
+        if (deltaY > 0 && currentState === STATES.MENU) {
+            // Swipe down → start game
+            unlockAudio();
+            startGameTransition();
+        } else if (deltaY < 0 && currentState === STATES.PLAYING) {
+            // Swipe up → back to menu
+            playSound('hit');
+            stopGameTransition();
+        } else if (deltaY < 0 && currentState === STATES.GAME_OVER && gameOverPhase === 'show_scores') {
+            const scoreElapsed = Date.now() - gameOverTime;
+            if (scoreElapsed > 800) stopGameTransition();
         }
     }, { passive: true });
 
