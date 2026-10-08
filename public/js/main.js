@@ -21,10 +21,12 @@ function resizeCanvas() {
 
     const newIsLandscape = window.innerWidth > window.innerHeight;
 
-    if (newIsLandscape && isLandscape === false) {
-        startGameTransition();
-    } else if (!newIsLandscape && isLandscape === true) {
-        stopGameTransition();
+    if (MINIGAMES_ENABLED) {
+        if (newIsLandscape && isLandscape === false) {
+            startGameTransition();
+        } else if (!newIsLandscape && isLandscape === true) {
+            stopGameTransition();
+        }
     }
 
     isLandscape = newIsLandscape;
@@ -33,14 +35,7 @@ function resizeCanvas() {
 // ─── Menu Drawing ─────────────────────────────────────────────────────────────
 
 function drawMenu(layout, now) {
-    // INVARIANTE: logo flota con seno (periodo 800ms, amplitud ±8px).
-    // No modificar esta fórmula salvo indicación expresa.
-    const floatOffset = Math.sin(now / 800) * 8;
-    ctx.save();
-    ctx.translate(0, floatOffset);
-    drawPolygon(layout.logoLeftPts);
-    drawPolygon(layout.logoRightPts);
-    ctx.restore();
+    // Home uses the HTML logo over the credits. Skip the canvas isotype.
 
     // Reset scores while in menu
     scoreUser = 0; scoreAi = 0;
@@ -66,6 +61,7 @@ function loop() {
 
     if (currentState === STATES.MENU) {
         drawMenu(layout, now);
+        if (!creditsActive) openCredits({ music: false });
     } else if (currentState === STATES.TRANSITION_TO_GAME) {
         drawTransitionToGame(layout, now);
     } else if (currentState === STATES.TRANSITION_TO_MENU) {
@@ -88,10 +84,15 @@ resizeCanvas();
 initInput();
 initCreditsInput();
 
-// Adapt UI text for touch-capable devices (tablets)
-if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-    const instrEl = document.getElementById('landscape-instruction');
-    if (instrEl) instrEl.innerHTML = 'BIG THINGS ARE COMING.<br>FOR NOW, TAP HERE';
-}
-
 requestAnimationFrame(loop);
+
+// Music waits for a gesture because browsers block autoplay.
+function startHomeCreditsMusic() {
+    window.removeEventListener('pointerdown', startHomeCreditsMusic);
+    window.removeEventListener('keydown', startHomeCreditsMusic);
+    if (!creditsActive || creditsMusicPlaying) return;
+    unlockAudio();
+    playCreditsMusic();
+}
+window.addEventListener('pointerdown', startHomeCreditsMusic);
+window.addEventListener('keydown', startHomeCreditsMusic);

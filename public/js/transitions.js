@@ -4,10 +4,11 @@
 // directamente desde otros módulos para iniciar/detener el juego.
 
 function startGameTransition() {
+    if (!MINIGAMES_ENABLED) return;
     if (currentState !== STATES.MENU) return;
-    if (creditsActive) return;
     // Block game start until cookie consent is resolved
     if (!localStorage.getItem('cookie-consent')) return;
+    if (creditsActive) closeCredits();
     initAudio();
 
     // Cycle: pong → arkanoid → invaders → snake → pong
@@ -249,5 +250,6 @@ function drawTransitionToMenu(layout, now) {
 
     if (elapsed >= TRANSITION_DURATION) {
         currentState = STATES.MENU;
+        openCredits();
     }
 }

@@ -3,13 +3,15 @@
 // chiptune ending music using Web Audio API onto a full-screen overlay canvas.
 
 let creditsActive = false;
+let creditsAsHome = false;
+let creditsCloseGen = 0;
 let creditsCanvas, creditsCtx;
 let creditsScrollY = 0;
 let creditsSpeed = 35;           // px per second, recalculated from song duration
 let creditsAnimId = null;
 let creditsLastTime = 0;            // last frame timestamp for delta-time
 let creditsStartTime = 0;           // timestamp when credits opened
-const CREDITS_INITIAL_DELAY = 500;  // ms of black screen before scroll starts
+const CREDITS_INITIAL_DELAY = 0;  // start scrolling as soon as the overlay is up
 let creditsMusicPlaying = false;
 let creditsFadeStart = 0;           // timestamp when fade begins
 let creditsImages = {};             // preloaded PNG images
@@ -194,9 +196,6 @@ const PIXEL_ARTS = {
 // ─── Credits content definition ──────────────────────────────────────────────
 // type: 'title' | 'text' | 'image' | 'gap'
 const CREDITS_CONTENT = [
-    { type: 'gap', lines: 1 },
-    { type: 'title', text: 'UNLOGIC GAMES' },
-    { type: 'gap', lines: 2 },
     { type: 'text', text: 'AN INDEPENDENT STUDIO' },
     { type: 'text', text: 'HEADQUARTERED IN MIAMI' },
     { type: 'text', text: 'WITH OUR MAIN DEVELOPMENT' },
@@ -262,6 +261,7 @@ function buildCreditsLayout(scale) {
     let y = 0;
     const items = [];
     let finalStartY = null;
+    let finalEndY = null;
 
     for (const entry of CREDITS_CONTENT) {
         if (entry.final && finalStartY === null) finalStartY = y;
@@ -270,9 +270,11 @@ function buildCreditsLayout(scale) {
         } else if (entry.type === 'title') {
             items.push({ type: 'title', text: entry.text, y, scale: titleScale, final: !!entry.final });
             y += titleLineHeight;
+            if (entry.final) finalEndY = y;
         } else if (entry.type === 'text') {
             items.push({ type: 'text', text: entry.text, y, scale: 1, final: !!entry.final });
             y += lineHeight;
+            if (entry.final && entry.text !== 'EXIT_HINT') finalEndY = y;
         } else if (entry.type === 'image') {
             const art = PIXEL_ARTS[entry.art];
             if (art) {
@@ -280,6 +282,7 @@ function buildCreditsLayout(scale) {
                 const artH = art.h * artPixelSize;
                 items.push({ type: 'image', art: entry.art, y, pixelSize: artPixelSize, final: !!entry.final });
                 y += artH + 4 * scale;
+                if (entry.final) finalEndY = y;
             }
         } else if (entry.type === 'png') {
             const imgW = entry.size * scale;
@@ -288,9 +291,15 @@ function buildCreditsLayout(scale) {
             const imgH = imgW * aspect;
             items.push({ type: 'png', img: entry.img, y, size: imgW, final: !!entry.final });
             y += imgH + 4 * scale;
+            if (entry.final) finalEndY = y;
         }
     }
-    return { items, totalHeight: y, finalStartY: finalStartY || y };
+    return {
+        items,
+        totalHeight: y,
+        finalStartY: finalStartY || y,
+        finalEndY: finalEndY || y
+    };
 }
 
 // ─── Draw a single pixel-font character ──────────────────────────────────────
@@ -384,13 +393,16 @@ function startMidiPlayer(buf) {
         creditsMidiPlayer = smf.player();
         console.log('[MIDI] Player created, duration:', creditsMidiPlayer.durationMS(), 'ms');
         const synth = JZZ.synth.Tiny();
+        const CREDITS_MUSIC_VOLUME = 0.28;
         synth.or(function () {
             console.error('[MIDI] Synth failed to open:', this.err());
             creditsMusicPlaying = false;
         });
         synth.and(function () {
+            if (typeof synth.volumeF === 'function') synth.volumeF(CREDITS_MUSIC_VOLUME);
             console.log('[MIDI] Synth opened successfully');
         });
+        if (typeof synth.volumeF === 'function') synth.volumeF(CREDITS_MUSIC_VOLUME);
         creditsMidiPlayer.connect(synth);
         creditsMidiPlayer.play();
         console.log('[MIDI] Player.play() called');
@@ -414,9 +426,10 @@ function stopCreditsMusic() {
 }
 
 // ─── Open / Close Credits ────────────────────────────────────────────────────
-function openCredits() {
+function openCredits(options) {
     if (creditsActive) return;
     creditsActive = true;
+    creditsAsHome = true;
     creditsScrollY = 0;
     creditsLastTime = 0;
     creditsStartTime = 0;
@@ -424,6 +437,7 @@ function openCredits() {
     preloadCreditsImages();
 
     const overlay = document.getElementById('credits-overlay');
+    overlay.classList.add('credits-home');
     overlay.style.display = 'flex';
     // trigger reflow then fade in
     overlay.offsetHeight;
@@ -433,14 +447,20 @@ function openCredits() {
     creditsCtx = creditsCanvas.getContext('2d');
     resizeCreditsCanvas();
 
-    unlockAudio();
-    playCreditsMusic();
+    const withMusic = !options || options.music !== false;
+    if (withMusic) {
+        unlockAudio();
+        playCreditsMusic();
+    }
     creditsAnimId = requestAnimationFrame(creditsLoop);
 }
 
 function closeCredits() {
     if (!creditsActive) return;
     creditsActive = false;
+    creditsAsHome = false;
+    creditsCloseGen += 1;
+    const closeGen = creditsCloseGen;
     stopCreditsMusic();
     if (creditsAnimId) {
         cancelAnimationFrame(creditsAnimId);
@@ -448,7 +468,10 @@ function closeCredits() {
     }
     const overlay = document.getElementById('credits-overlay');
     overlay.style.opacity = '0';
-    setTimeout(() => { overlay.style.display = 'none'; }, 500);
+    setTimeout(() => {
+        if (closeGen !== creditsCloseGen || creditsActive) return;
+        overlay.style.display = 'none';
+    }, 500);
 }
 
 function resizeCreditsCanvas() {
@@ -490,12 +513,27 @@ function creditsLoop(timestamp) {
         creditsCtx.fillRect(0, sy, w, 1);
     }
 
-    // Speed is fixed (no dynamic duration available from MIDI player)
-
-    // Calculate speed so scroll finishes with the song (1:21 = 81s)
+    // Speed is timed to the credits song (1:21 = 81s)
     const SONG_DURATION = 81; // seconds
-    const finalBlockHeight = layout.totalHeight - layout.finalStartY;
-    const maxScroll = layout.finalStartY + finalBlockHeight / 2 - h / 2 + h;
+
+    // Home: fade credits away before they overlap the Unlogic logo or Steam Dreams.
+    const headerImg = document.querySelector('#ui-layer .logo-glow');
+    const cta = document.querySelector('.sd-cta');
+    const headerBottom = headerImg ? headerImg.getBoundingClientRect().bottom : Math.min(160, h * 0.18);
+    const ctaTop = cta ? cta.getBoundingClientRect().top : h * 0.72;
+    const edgeGap = 18;
+    const fadeSpan = creditsAsHome ? Math.min(100, h * 0.12) : 0;
+    const topGone = creditsAsHome ? (headerBottom + edgeGap) : 60;
+    const bottomGone = creditsAsHome ? (ctaTop - edgeGap) : (h - 40);
+    const fadeStart = creditsAsHome ? (bottomGone - fadeSpan) : (h - 40);
+    const baseY = creditsAsHome ? bottomGone : h;
+    const visibleTop = creditsAsHome ? (topGone + fadeSpan) : 60;
+    const visibleBottom = fadeStart;
+    const visualCenter = (visibleTop + visibleBottom) / 2;
+
+    // Stop with the heart + closing line centered in the open band.
+    const finalCenter = (layout.finalStartY + layout.finalEndY) / 2;
+    const maxScroll = Math.max(0, baseY + finalCenter - visualCenter);
     const scrollTime = SONG_DURATION - CREDITS_INITIAL_DELAY / 1000;
     if (scrollTime > 0 && maxScroll > 0) {
         creditsSpeed = maxScroll / scrollTime;
@@ -507,7 +545,6 @@ function creditsLoop(timestamp) {
     if (clamped && !creditsFadeStart) creditsFadeStart = Date.now();
 
     // Draw each item offset by scroll
-    const baseY = h; // text starts below screen, scrolls up
     // Non-final items fade out over 2 seconds once clamped
     const fadeFactor = (clamped && creditsFadeStart) ? Math.max(0, 1 - (Date.now() - creditsFadeStart) / 2000) : 1;
     for (const item of layout.items) {
@@ -516,10 +553,24 @@ function creditsLoop(timestamp) {
         // Skip if off screen
         if (drawY > h + 50 || drawY < -100) continue;
 
-        // Fade at edges
+        let itemH = 20;
+        if (item.type === 'title') itemH = 7 * basePixel * item.scale + 8;
+        else if (item.type === 'text') itemH = 7 * basePixel + 6;
+        else if (item.type === 'png' || item.type === 'image') itemH = item.size || 80;
+
         let alpha = 1;
-        if (drawY < 60) alpha = Math.max(0, drawY / 60);
-        if (drawY > h - 40) alpha = Math.max(0, (h - drawY) / 40);
+        if (creditsAsHome) {
+            if (drawY <= topGone) alpha = 0;
+            else if (drawY < topGone + fadeSpan) alpha = (drawY - topGone) / fadeSpan;
+            const itemBottom = drawY + itemH;
+            if (itemBottom >= bottomGone) alpha = 0;
+            else if (itemBottom > fadeStart) {
+                alpha = Math.min(alpha, (bottomGone - itemBottom) / fadeSpan);
+            }
+        } else {
+            if (drawY < 60) alpha = Math.max(0, drawY / 60);
+            if (drawY > h - 40) alpha = Math.max(0, (h - drawY) / 40);
+        }
 
         // Non-final items fade out when reaching the end
         if (!item.final) alpha *= fadeFactor;
@@ -532,6 +583,7 @@ function creditsLoop(timestamp) {
         } else if (item.type === 'text') {
             let displayText = item.text;
             const isExitHint = displayText === 'EXIT_HINT';
+            if (isExitHint && creditsAsHome) continue;
             if (isExitHint) {
                 displayText = hasUsedTouch ? 'TAP TO EXIT' : 'TAP OR PRESS ESC TO EXIT';
                 // Fade in 2 seconds after scroll stops
@@ -595,7 +647,7 @@ function creditsLoop(timestamp) {
 // ─── Input for credits overlay ───────────────────────────────────────────────
 function initCreditsInput() {
     document.addEventListener('keydown', (e) => {
-        if (!creditsActive) return;
+        if (!creditsActive || creditsAsHome) return;
         if (e.key === 'Escape') {
             e.preventDefault();
             closeCredits();
@@ -605,7 +657,7 @@ function initCreditsInput() {
     const overlay = document.getElementById('credits-overlay');
     if (overlay) {
         overlay.addEventListener('click', () => {
-            if (creditsActive) closeCredits();
+            if (creditsActive && !creditsAsHome) closeCredits();
         });
     }
 
