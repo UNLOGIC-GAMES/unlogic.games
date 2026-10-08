@@ -252,11 +252,6 @@ function initInput() {
 
     // ─── UI Buttons ───────────────────────────────────────────────────────────
 
-    document.getElementById('desktop-start-btn').addEventListener('click', () => {
-        unlockAudio();
-        startGameTransition();
-    });
-
     document.getElementById('back-btn').addEventListener('click', () => {
         playSound('hit');
         stopGameTransition();

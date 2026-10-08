@@ -20,6 +20,7 @@ const SNAKE_MAX_LEVEL      = 10;
 const SNAKE_BOOST_MAX      = 3;           // max speed multiplier when holding a key
 const SNAKE_BOOST_ACCEL    = 3;           // how fast boost ramps up (per second)
 
-// ─── Misc ─────────────────────────────────────────────────────────────────────
+// ─── Features ────────────────────────────────────────────────────────────────
+const MINIGAMES_ENABLED = false;
 const ALPHABET      = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const POWERUP_TYPES = ['multiball', 'slow', 'life'];
