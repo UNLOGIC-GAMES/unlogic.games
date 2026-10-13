@@ -68,3 +68,36 @@
     color: rgba(255, 255, 255, 0.8);
     border-color: rgba(255, 255, 255, 0.3);
 }
+
+/* Legal links stay on the home page after the cookie banner is dismissed. */
+.home-bottom {
+    margin-bottom: 1rem;
+}
+@media (min-width: 640px) {
+    .home-bottom { margin-bottom: 2rem; }
+}
+body.cookie-open .home-bottom {
+    margin-bottom: 6.5rem;
+}
+.legal-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 0 16px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.28);
+}
+.legal-links a {
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: none;
+}
+.legal-links a:hover,
+.legal-links a:focus-visible {
+    color: rgba(255, 255, 255, 0.92);
+}
