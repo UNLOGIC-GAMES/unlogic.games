@@ -916,7 +916,7 @@
       .scenes .build-steps b { font-size: 1.1rem; }
       .scenes .choose-scene .section-head { font-size: clamp(2rem, 3.4vw, 2.6rem); margin-bottom: 1rem; }
       .scenes .choose-scene .card .deck { margin-bottom: 0.7rem; font-size: 0.98rem; }
-      .scenes .choose-scene .diagram { max-width: 24rem; margin-bottom: 0.6rem; }
+      .scenes .choose-scene .diagram { width: min(46rem, 100%); max-width: none; margin-bottom: 0.6rem; }
       .scenes .choose-scene .side h3 { margin-bottom: 0.5rem; }
       .scenes .choose-scene .ticks li { margin-bottom: 0.3em; font-size: 0.98rem; line-height: 1.45; }
     }
@@ -1236,6 +1236,29 @@
     .paths .node { fill: var(--amber); }
     .side.local .paths .node { fill: var(--teal); }
     .paths .cap { fill: var(--art-cream); }
+    .paths[data-tree="open"] .ln path { stroke: rgba(255, 232, 186, .62); stroke-width: 3; }
+    .paths[data-tree="open"] .ln path.spine { stroke: #3ee0d6; stroke-width: 4.2; }
+    .paths[data-tree="open"] .ln path.stub { stroke: rgba(62, 224, 214, .55); stroke-width: 2.4; }
+    .paths[data-tree="open"] .node-g .halo { fill: #149990; opacity: .42; }
+    .paths[data-tree="open"] .node-g .core { fill: #8ff6ef; }
+    .paths[data-tree="open"] .node-g.spine .core { fill: #ffc56a; }
+    .paths[data-tree="open"] .node-g.spine .halo { fill: #ffbf5c; }
+    .paths[data-tree="open"] .node-g .pupil { fill: #fff6e4; }
+    .paths[data-tree="open"] .dot > * { scale: 1; }
+    .paths[data-tree="open"] .dive {
+      fill: none; stroke: rgba(143, 246, 239, .85); stroke-width: 1.6; opacity: 0;
+    }
+    .choose-scene .diagram {
+      width: min(58rem, 100%); max-width: none;
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+      mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+    }
+    .choose-scene .diagram::before {
+      content: "";
+      position: absolute; inset: 12% 14%;
+      background: radial-gradient(closest-side, rgba(45, 205, 196, .18), rgba(45, 205, 196, 0) 74%);
+      pointer-events: none;
+    }
     .stamp { background: var(--ink); border-color: #ff7a5c; color: #ff7a5c; }
     .count { color: rgba(246, 241, 228, .66); }
     .count b { color: var(--teal); }
@@ -1270,11 +1293,11 @@
     .choose-scene .versus { grid-template-columns: minmax(0, 44rem); justify-content: center; }
     .choose-scene .side-label,
     .choose-scene .side h3 { text-align: center; }
-    .choose-scene .diagram { max-width: 40rem; margin-inline: auto; }
+    .choose-scene .diagram { width: min(58rem, 100%); max-width: none; margin-inline: auto; }
     .choose-scene .ticks { max-width: 36rem; margin-inline: auto; }
     .choose-scene .section-head { margin-bottom: 0.9rem; }
     .choose-scene .card .deck { margin-bottom: clamp(1.6rem, 3vw, 2.6rem); }
-    .scenes .choose-scene .diagram { max-width: 34rem; }
+    .scenes .choose-scene .diagram { width: min(58rem, 100%); max-width: none; }
 
     @media (max-width: 52rem) {
       .side + .side { border-left: 0; border-top: 0.06rem solid rgba(255, 232, 186, .16); }
@@ -1446,7 +1469,7 @@
                   <p class="side-label" data-text="choose.local.label"></p>
                   <h3 data-text="choose.local.title"></h3>
                   <div class="diagram">
-                    <svg class="paths" data-tree="open" viewBox="0 0 320 160" aria-hidden="true"></svg>
+                    <svg class="paths" data-tree="open" viewBox="0 0 760 300" aria-hidden="true"></svg>
                   </div>
                   <ul class="ticks" data-list="choose.local.items"></ul>
                 </section>
@@ -1552,7 +1575,7 @@
 
   </div>
 
-  <script src="assets/js/scenes.js?v=8"></script>
+  <script src="assets/js/scenes.js?v=9"></script>
   <script src="assets/js/page.js?v=24"></script>
 </body>
 </html>
