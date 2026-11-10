@@ -108,7 +108,11 @@
             pathLength: "1",
             class: open && from.spine && node.spine ? "spine" : ""
           }, lines);
-          if (animate) items.push({ node: seg, kind: "line", from: t0, to: t0 + step, spine: !!(from.spine && node.spine), x: node.x });
+          if (animate) items.push({
+            node: seg, kind: "line", from: t0, to: t0 + step,
+            spine: !!(from.spine && node.spine), x: node.x,
+            x1: from.x, y1: from.y, x2: node.x, y2: node.y
+          });
         }
         var at = d === 0 ? 0 : t0 + step;
         if (!open && d === last) {
@@ -142,7 +146,10 @@
             pathLength: "1",
             class: "stub"
           }, lines);
-          if (animate) items.push({ node: stub, kind: "line", from: at, to: at + 0.07, spine: false });
+          if (animate) items.push({
+            node: stub, kind: "line", from: at, to: at + 0.07, spine: false,
+            x1: node.x, y1: node.y, x2: tip.x, y2: tip.y
+          });
         }
       });
     });
@@ -157,41 +164,47 @@
     var walk = focus;
     while (walk) { walk.spine = true; walk = walk.parent; }
     var origin = levels[0][0];
+    var fit = radiusAt(focus.d) / radiusAt(0);
+    var fx = (fit * origin.x - focus.x) / (fit - 1);
+    var fy = (fit * origin.y - focus.y) / (fit - 1);
     var cycle = el("g", { class: "cycle" }, svg);
     var drawn = render(cycle, levels, true, true, focus);
-    var ring = el("circle", { class: "dive", cx: focus.x, cy: focus.y, r: "12" }, cycle);
+    var ring = el("circle", { class: "dive", cx: focus.x, cy: focus.y, r: "12" }, svg);
     return {
       items: drawn.items,
       focusDot: drawn.focusDot,
       originDot: drawn.originDot,
       total: drawn.total,
       open: true,
+      cycle: cycle,
       ring: ring,
-      zoom: { focus: focus, origin: origin, fit: radiusAt(focus.d) / radiusAt(0) }
+      _k: 1,
+      zoom: { focus: focus, origin: origin, fit: fit, fx: fx, fy: fy }
     };
   }
 
-  /* The tree never scales as a camera. Side paths fade where they stand,
-     the chosen node grows as it glides back to the root, and the next
-     loop starts on that same dot. */
-  function glide(u) {
-    return u < 0.84 ? (u / 0.84) * 0.92 : 0.92 + 0.08 * ((u - 0.84) / 0.16);
+  /* z is 0 at the wide view and 1 when the last node sits on the first
+     node, at the first node's size. The next loop grows from that dot. */
+  function applyZoom(tree, z) {
+    var s = tree.zoom.fit;
+    var k = 1 + z * (1 / s - 1);
+    var fx = tree.zoom.fx;
+    var fy = tree.zoom.fy;
+    tree._k = k;
+    tree.cycle.setAttribute("transform",
+      "translate(" + fx.toFixed(2) + " " + fy.toFixed(2) + ") scale(" + k.toFixed(4) +
+      ") translate(" + (-fx).toFixed(2) + " " + (-fy).toFixed(2) + ")");
   }
 
   function cycleParts(t) {
-    var grow = clamp(t / 0.42);
-    var side = t < 0.28 ? 1 : clamp(1 - (t - 0.28) / 0.16);
-    var travel = t < 0.40 ? 0 : glide(clamp((t - 0.40) / 0.60));
-    return { grow: grow, side: side, spine: 1, travel: travel };
-  }
-
-  function moveFocus(g, x, y, scale) {
-    for (var i = 0; i < g.childNodes.length; i++) {
-      var c = g.childNodes[i];
-      c.setAttribute("cx", x.toFixed(2));
-      c.setAttribute("cy", y.toFixed(2));
-      c.setAttribute("r", (Number(c.getAttribute("data-r")) * scale).toFixed(2));
-    }
+    /* Most of the loop is the tree growing out of the bullet we just
+       entered. The push into the newest bullet is the short ending, and
+       the next loop starts on that same dot. */
+    var grow = clamp(t / 0.52);
+    var u = clamp((t - 0.42) / 0.58);
+    var zoom = u < 0.86 ? (u / 0.86) * 0.94 : 0.94 + 0.06 * ((u - 0.86) / 0.14);
+    var fade = u < 0.78 ? 1 - u * 0.28 : clamp(1 - (u - 0.78) / 0.16);
+    return { grow: grow, zoom: zoom, fade: fade };
   }
 
   function placeNode(node, x, y, cx, cy, scale) {
@@ -203,51 +216,50 @@
   function paintTree(tree, p, parts) {
     var items = tree.items;
     var focusDot = tree.focusDot;
-    var side = parts && parts.side != null ? parts.side : 1;
-    var travel = parts && parts.travel ? parts.travel : 0;
-    var f = tree.zoom && tree.zoom.focus;
-    var o = tree.zoom && tree.zoom.origin;
-    var span = f && o ? (f.x - o.x) || 1 : 1;
-    function behind(x) {
-      if (travel <= 0 || !f) return 1;
-      var at = clamp((f.x - x) / span);
-      return clamp(1 - (travel - (at - 0.12)) / 0.16);
+    var fade = parts && parts.fade != null ? parts.fade : 1;
+    var zoom = parts && parts.zoom ? parts.zoom : 0;
+    var k = tree._k || 1;
+    var fx = tree.zoom ? tree.zoom.fx : 0;
+    var fy = tree.zoom ? tree.zoom.fy : 0;
+    function soften(x, y, rad) {
+      var px = k * x + fx * (1 - k);
+      var py = k * y + fy * (1 - k);
+      var reach = (rad || 6) * k + 10;
+      var dx = Math.min(px, 760 - px) - reach;
+      var dy = Math.min(py, 300 - py) - reach;
+      return clamp(Math.min(dx / 28, dy / 20));
     }
     var shown = 0;
     items.forEach(function (item) {
+      var keep = item.node === focusDot;
       if (item.kind === "line") {
         var draw = clamp((p - item.from) / (item.to - item.from));
-        var dim = item.spine ? behind(item.x) : side;
+        var dim = keep ? 1 : fade;
+        if (!keep && item.x1 != null) dim *= Math.min(soften(item.x1, item.y1, 5), soften(item.x2, item.y2, 5));
         item.node.style.strokeDashoffset = String(1 - draw);
         item.node.style.opacity = String(draw <= 0 ? 0 : dim);
       } else {
         var reveal = clamp((p - item.from) / 0.06 + 1);
-        var dotDim = item.node === focusDot ? 1 : (item.spine ? behind(item.x) : side);
+        var dotDim = keep ? 1 : fade;
+        if (!keep && item.x != null && tree.zoom) dotDim *= soften(item.x, item.y, (item.r || 6) * 2.2);
         item.node.classList.toggle("on", reveal > 0);
         item.node.style.opacity = String(reveal * dotDim);
-        if (item.x != null && item.node !== focusDot) {
-          placeNode(item.node, item.x, item.y, item.x, item.y, 0.55 + 0.45 * reveal);
+        if (item.x != null) {
+          var pop = 0.55 + 0.45 * reveal;
+          placeNode(item.node, item.x, item.y, item.x, item.y, pop);
         }
         if (reveal > 0 && item.counts) shown += 1;
       }
     });
-    if (focusDot && tree.zoom) {
-      var x = f.x + (o.x - f.x) * travel;
-      var y = f.y + (o.y - f.y) * travel;
-      var born = 0;
-      items.forEach(function (item) {
-        if (item.node === focusDot) born = clamp((p - item.from) / 0.06 + 1);
-      });
-      var scale = (0.55 + 0.45 * born) * (1 + travel * (1 / tree.zoom.fit - 1));
-      focusDot.removeAttribute("transform");
-      moveFocus(focusDot, x, y, scale);
-      if (tree.ring) {
-        var pulse = Math.sin(Math.min(travel, 1) * Math.PI);
-        tree.ring.setAttribute("cx", x.toFixed(2));
-        tree.ring.setAttribute("cy", y.toFixed(2));
-        tree.ring.setAttribute("r", (16 + 18 * pulse).toFixed(2));
-        tree.ring.style.opacity = String(0.55 * pulse * born);
-      }
+    if (tree.ring && tree.zoom) {
+      var f = tree.zoom.focus;
+      var px = k * f.x + fx * (1 - k);
+      var py = k * f.y + fy * (1 - k);
+      var pulse = Math.sin(Math.min(zoom, 1) * Math.PI);
+      tree.ring.setAttribute("cx", px.toFixed(2));
+      tree.ring.setAttribute("cy", py.toFixed(2));
+      tree.ring.setAttribute("r", (18 + 14 * pulse).toFixed(2));
+      tree.ring.style.opacity = String(0.5 * pulse);
     }
     return shown;
   }
@@ -320,7 +332,7 @@
     var spinPhase = 0;
     var spinLast = 0;
     var spinRaf = 0;
-    var CYCLE = 6.2;
+    var CYCLE = 5.4;
 
     function paint() {
       var live = root.classList.contains("scenes");
@@ -345,8 +357,9 @@
           }
           var turns = Math.floor(spinPhase);
           var parts = reduce.matches
-            ? { grow: 1, side: 1, spine: 1, travel: 0 }
-            : (spinning ? cycleParts(spinPhase - turns) : { grow: 0, side: 1, spine: 1, travel: 0 });
+            ? { grow: 1, zoom: 0, fade: 1 }
+            : (spinning ? cycleParts(spinPhase - turns) : { grow: 0, zoom: 0, fade: 1 });
+          if (tree.zoom) applyZoom(tree, parts.zoom);
           var shown = paintTree(tree, parts.grow, parts);
           if (count) count.textContent = String(turns * tree.total + Math.max(shown, 1));
         });
