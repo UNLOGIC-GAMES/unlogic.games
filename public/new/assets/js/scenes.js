@@ -20,29 +20,67 @@
   }
 
   /* A story as a set of levels. The hand-written one stops after three
-     choices and every branch ends on a cap. The open one loops: it grows
-     from its first node, zooms into a leaf until that leaf is the first
-     node again, and grows once more. */
+     choices and every branch ends on a cap. The open one stays inside its
+     frame: it grows, the paths you did not take dissolve where they are,
+     and the chosen node glides home to become the first node again. */
 
   function levelsOf(open) {
-    var counts = open ? [1, 2, 3, 5, 7, 10, 13] : [1, 2, 4, 8];
-    var span = open ? 46 : 92;
-    var rand = seeded(open ? 11 : 5);
-    return counts.map(function (n, d) {
+    if (!open) {
+      var closed = [1, 2, 4, 8];
+      return closed.map(function (n, d) {
+        var nodes = [];
+        for (var i = 0; i < n; i++) {
+          var y = n === 1 ? 80 : 12 + (136 * i) / (n - 1);
+          nodes.push({ x: 18 + d * 92, y: y, d: d });
+        }
+        return nodes.sort(function (a, b) { return a.y - b.y; });
+      });
+    }
+
+    var counts = [1, 2, 3, 4, 6, 8];
+    var rand = seeded(11);
+    var x0 = 119;
+    var x1 = 639;
+    var top = 54;
+    var bot = 246;
+    var span = (x1 - x0) / (counts.length - 1);
+    var levels = counts.map(function (n, d) {
       var nodes = [];
       for (var i = 0; i < n; i++) {
-        var y = n === 1 ? 80 : 12 + (136 * i) / (n - 1);
-        if (open && d > 1) y += (rand() - 0.5) * (60 / n);
-        nodes.push({ x: 18 + d * span, y: y });
+        var y = n === 1 ? (top + bot) / 2 : top + ((bot - top) * i) / (n - 1);
+        if (d > 1) y += (rand() - 0.5) * Math.min(16, (bot - top) / n);
+        if (y < top) y = top;
+        if (y > bot) y = bot;
+        nodes.push({ x: x0 + d * span, y: y, d: d });
       }
-      return nodes.sort(function (a, b) { return a.y - b.y; });
+      nodes.sort(function (a, b) { return a.y - b.y; });
+      return nodes;
     });
+    for (var d = 1; d < levels.length; d++) {
+      var parents = levels[d - 1];
+      levels[d].forEach(function (node, i) {
+        node.parent = parents[Math.min(parents.length - 1, Math.floor((i * parents.length) / nodeParentCount(levels[d])))];
+      });
+    }
+    return levels;
   }
+
+  function nodeParentCount(nodes) { return nodes.length; }
 
   function closest(level, y) {
     return level.reduce(function (best, node) {
       return Math.abs(node.y - y) < Math.abs(best.y - y) ? node : best;
     });
+  }
+
+  function radiusAt(d) { return Math.max(4.6, 12.5 - d * 1.5); }
+
+  function curve(a, b) {
+    var dx = b.x - a.x;
+    return "M" + a.x.toFixed(1) + " " + a.y.toFixed(1) +
+      "C" + (a.x + dx * 0.62).toFixed(1) + " " + a.y.toFixed(1) +
+      " " + (a.x + dx * 0.38).toFixed(1) + " " + b.y.toFixed(1) +
+      " " + b.x.toFixed(1) + " " + b.y.toFixed(1);
   }
 
   function render(parent, levels, open, animate, focus) {
@@ -54,24 +92,38 @@
     var total = 0;
     var last = levels.length - 1;
     var start = open ? 0 : 0.04;
-    var step = open ? 0.08 : 0.15;
+    var step = open ? 0.07 : 0.15;
 
     levels.forEach(function (nodes, d) {
       nodes.forEach(function (node, i) {
         var t0 = start + Math.max(d - 1, 0) * step;
-        if (d > 0) {
+        var from = node.parent;
+        if (!from && d > 0) {
           var parents = levels[d - 1];
-          var from = parents[Math.min(parents.length - 1, Math.floor((i * parents.length) / nodes.length))];
+          from = parents[Math.min(parents.length - 1, Math.floor((i * parents.length) / nodes.length))];
+        }
+        if (from) {
           var seg = el("path", {
-            d: "M" + from.x + " " + from.y + " L" + node.x + " " + node.y,
-            pathLength: "1"
+            d: open ? curve(from, node) : ("M" + from.x + " " + from.y + " L" + node.x + " " + node.y),
+            pathLength: "1",
+            class: open && from.spine && node.spine ? "spine" : ""
           }, lines);
-          if (animate) items.push({ node: seg, kind: "line", from: t0, to: t0 + step });
+          if (animate) items.push({ node: seg, kind: "line", from: t0, to: t0 + step, spine: !!(from.spine && node.spine), x: node.x });
         }
         var at = d === 0 ? 0 : t0 + step;
         if (!open && d === last) {
           var cap = el("rect", { x: node.x - 5, y: node.y - 5, width: 10, height: 10, class: "cap" }, dots);
           if (animate) items.push({ node: cap, kind: "dot", from: at });
+        } else if (open) {
+          var r = radiusAt(d);
+          var g = el("g", { class: "node-g" + (node.spine ? " spine" : "") + (node === focus ? " focus" : "") }, dots);
+          el("circle", { cx: node.x, cy: node.y, r: (r * 2.15).toFixed(2), "data-r": (r * 2.15).toFixed(2), class: "halo" }, g);
+          el("circle", { cx: node.x, cy: node.y, r: r.toFixed(2), "data-r": r.toFixed(2), class: "core" }, g);
+          el("circle", { cx: node.x, cy: node.y, r: (r * 0.4).toFixed(2), "data-r": (r * 0.4).toFixed(2), class: "pupil" }, g);
+          if (node === focus) focusDot = g;
+          if (d === 0) originDot = g;
+          total += 1;
+          if (animate) items.push({ node: g, kind: "dot", from: at, counts: true, spine: !!node.spine, x: node.x, y: node.y, r: r });
         } else {
           var dot = el("circle", {
             cx: node.x, cy: node.y,
@@ -79,18 +131,18 @@
             class: "node"
           }, dots);
           if (!animate) dot.classList.add("on");
-          if (open && node === focus) focusDot = dot;
-          if (d === 0) originDot = dot;
           total += 1;
           if (animate) items.push({ node: dot, kind: "dot", from: at, counts: true });
         }
         if (open && d === last && node !== focus) {
+          var drift = (seeded(d * 17 + i + 3)() - 0.5) * 18;
+          var tip = { x: node.x + 30, y: node.y + drift };
           var stub = el("path", {
-            d: "M" + node.x + " " + node.y + " l18 " + ((seeded(d * 17 + i + 3)() - 0.5) * 14).toFixed(1),
+            d: curve(node, tip),
             pathLength: "1",
             class: "stub"
           }, lines);
-          if (animate) items.push({ node: stub, kind: "line", from: at, to: at + 0.08 });
+          if (animate) items.push({ node: stub, kind: "line", from: at, to: at + 0.07, spine: false });
         }
       });
     });
@@ -99,66 +151,104 @@
 
   function buildTree(svg, open) {
     var levels = levelsOf(open);
-    if (!open) return { items: render(svg, levels, false, true, null).items };
+    if (!open) return { items: render(svg, levels, false, true, null).items, open: false };
 
-    var focus = closest(levels[levels.length - 1], 80);
+    var focus = closest(levels[levels.length - 1], 150);
+    var walk = focus;
+    while (walk) { walk.spine = true; walk = walk.parent; }
     var origin = levels[0][0];
     var cycle = el("g", { class: "cycle" }, svg);
     var drawn = render(cycle, levels, true, true, focus);
-    var fit = Number(drawn.focusDot.getAttribute("r")) / Number(drawn.originDot.getAttribute("r"));
+    var ring = el("circle", { class: "dive", cx: focus.x, cy: focus.y, r: "12" }, cycle);
     return {
       items: drawn.items,
       focusDot: drawn.focusDot,
-      cycle: cycle,
+      originDot: drawn.originDot,
       total: drawn.total,
-      zoom: { focus: focus, origin: origin, fit: fit }
+      open: true,
+      ring: ring,
+      zoom: { focus: focus, origin: origin, fit: radiusAt(focus.d) / radiusAt(0) }
     };
   }
 
-  /* z is 0 at the wide view and 1 when the focus leaf sits on the first
-     node, at the first node's size. Everything else has faded by then, so
-     the next loop can start from that single dot. */
-  function applyZoom(tree, z) {
-    var s = tree.zoom.fit;
-    var k = 1 + z * (1 / s - 1);
-    var rx = tree.zoom.origin.x;
-    var ry = tree.zoom.origin.y;
-    var tx = tree.zoom.focus.x;
-    var ty = tree.zoom.focus.y;
-    var fx = (s * rx - tx) / (s - 1);
-    var fy = (s * ry - ty) / (s - 1);
-    tree.cycle.setAttribute("transform",
-      "translate(" + fx.toFixed(2) + " " + fy.toFixed(2) + ") scale(" + k.toFixed(4) +
-      ") translate(" + (-fx).toFixed(2) + " " + (-fy).toFixed(2) + ")");
+  /* The tree never scales as a camera. Side paths fade where they stand,
+     the chosen node grows as it glides back to the root, and the next
+     loop starts on that same dot. */
+  function glide(u) {
+    return u < 0.84 ? (u / 0.84) * 0.92 : 0.92 + 0.08 * ((u - 0.84) / 0.16);
   }
 
-  /* Grow and zoom overlap, and the zoom keeps a steady pace until a short
-     landing. Nothing in the loop sits still. */
   function cycleParts(t) {
-    var grow = clamp(t / 0.58);
-    var u = clamp((t - 0.1) / 0.9);
-    var zoom = u < 0.92 ? (u / 0.92) * 0.97 : 0.97 + 0.03 * ((u - 0.92) / 0.08);
-    var fade = u < 0.42 ? 1 : clamp(1 - (u - 0.42) / 0.5);
-    return { grow: grow, zoom: zoom, fade: fade };
+    var grow = clamp(t / 0.42);
+    var side = t < 0.28 ? 1 : clamp(1 - (t - 0.28) / 0.16);
+    var travel = t < 0.40 ? 0 : glide(clamp((t - 0.40) / 0.60));
+    return { grow: grow, side: side, spine: 1, travel: travel };
   }
 
-  function paintTree(items, p, fade, focusDot) {
+  function moveFocus(g, x, y, scale) {
+    for (var i = 0; i < g.childNodes.length; i++) {
+      var c = g.childNodes[i];
+      c.setAttribute("cx", x.toFixed(2));
+      c.setAttribute("cy", y.toFixed(2));
+      c.setAttribute("r", (Number(c.getAttribute("data-r")) * scale).toFixed(2));
+    }
+  }
+
+  function placeNode(node, x, y, cx, cy, scale) {
+    node.setAttribute("transform",
+      "translate(" + x.toFixed(2) + " " + y.toFixed(2) + ") scale(" + scale.toFixed(4) +
+      ") translate(" + (-cx).toFixed(2) + " " + (-cy).toFixed(2) + ")");
+  }
+
+  function paintTree(tree, p, parts) {
+    var items = tree.items;
+    var focusDot = tree.focusDot;
+    var side = parts && parts.side != null ? parts.side : 1;
+    var travel = parts && parts.travel ? parts.travel : 0;
+    var f = tree.zoom && tree.zoom.focus;
+    var o = tree.zoom && tree.zoom.origin;
+    var span = f && o ? (f.x - o.x) || 1 : 1;
+    function behind(x) {
+      if (travel <= 0 || !f) return 1;
+      var at = clamp((f.x - x) / span);
+      return clamp(1 - (travel - (at - 0.12)) / 0.16);
+    }
     var shown = 0;
     items.forEach(function (item) {
       if (item.kind === "line") {
-        item.node.style.strokeDashoffset = String(1 - clamp((p - item.from) / (item.to - item.from)));
-        item.node.style.opacity = fade < 1 ? String(fade) : "";
+        var draw = clamp((p - item.from) / (item.to - item.from));
+        var dim = item.spine ? behind(item.x) : side;
+        item.node.style.strokeDashoffset = String(1 - draw);
+        item.node.style.opacity = String(draw <= 0 ? 0 : dim);
       } else {
-        var on = p >= item.from;
-        item.node.classList.toggle("on", on);
-        if (on && item.counts) shown += 1;
-        if (focusDot) {
-          var reveal = clamp((p - item.from) / 0.05 + 1);
-          item.node.style.opacity = String(item.node === focusDot ? reveal : reveal * fade);
-          item.node.style.scale = String(0.6 + 0.4 * reveal);
+        var reveal = clamp((p - item.from) / 0.06 + 1);
+        var dotDim = item.node === focusDot ? 1 : (item.spine ? behind(item.x) : side);
+        item.node.classList.toggle("on", reveal > 0);
+        item.node.style.opacity = String(reveal * dotDim);
+        if (item.x != null && item.node !== focusDot) {
+          placeNode(item.node, item.x, item.y, item.x, item.y, 0.55 + 0.45 * reveal);
         }
+        if (reveal > 0 && item.counts) shown += 1;
       }
     });
+    if (focusDot && tree.zoom) {
+      var x = f.x + (o.x - f.x) * travel;
+      var y = f.y + (o.y - f.y) * travel;
+      var born = 0;
+      items.forEach(function (item) {
+        if (item.node === focusDot) born = clamp((p - item.from) / 0.06 + 1);
+      });
+      var scale = (0.55 + 0.45 * born) * (1 + travel * (1 / tree.zoom.fit - 1));
+      focusDot.removeAttribute("transform");
+      moveFocus(focusDot, x, y, scale);
+      if (tree.ring) {
+        var pulse = Math.sin(Math.min(travel, 1) * Math.PI);
+        tree.ring.setAttribute("cx", x.toFixed(2));
+        tree.ring.setAttribute("cy", y.toFixed(2));
+        tree.ring.setAttribute("r", (16 + 18 * pulse).toFixed(2));
+        tree.ring.style.opacity = String(0.55 * pulse * born);
+      }
+    }
     return shown;
   }
 
@@ -230,7 +320,7 @@
     var spinPhase = 0;
     var spinLast = 0;
     var spinRaf = 0;
-    var CYCLE = 5.2;
+    var CYCLE = 6.2;
 
     function paint() {
       var live = root.classList.contains("scenes");
@@ -250,15 +340,14 @@
         if (stamp) stamp.classList.toggle("on", cp >= 0.5);
         trees.forEach(function (tree) {
           if (!tree.open) {
-            paintTree(tree.items, cp);
+            paintTree(tree, cp, null);
             return;
           }
           var turns = Math.floor(spinPhase);
           var parts = reduce.matches
-            ? { grow: 1, zoom: 0, fade: 1 }
-            : (spinning ? cycleParts(spinPhase - turns) : { grow: 0, zoom: 0, fade: 1 });
-          var shown = paintTree(tree.items, parts.grow, parts.fade, tree.focusDot);
-          if (tree.zoom) applyZoom(tree, parts.zoom);
+            ? { grow: 1, side: 1, spine: 1, travel: 0 }
+            : (spinning ? cycleParts(spinPhase - turns) : { grow: 0, side: 1, spine: 1, travel: 0 });
+          var shown = paintTree(tree, parts.grow, parts);
           if (count) count.textContent = String(turns * tree.total + Math.max(shown, 1));
         });
       }
