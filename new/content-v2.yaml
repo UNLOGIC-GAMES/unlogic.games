@@ -1,0 +1,257 @@
+# SteamDreams landing copy. The page loads this file in the browser.
+# *Stars* become italics. Quote any value that contains a #.
+
+site:
+  title: "SteamDreams: Lab & Workshop"
+  footer: "© 2026 Unlogic Games Trademark is property of Unlogic Entertainment Factory Inc. All rights reserved."
+  cover_alt: SteamDreams cast at the workshop bench
+  logo_alt: SteamDreams
+  tagline_alt: "A fucking Cozy CRAZY Game? (with GOBLINS)"
+  studio_alt: Unlogic Games
+  menu_label: Menu
+  nav_studio: Unlogic Games
+  nav_contact: Contact
+  nav_kickstarter: Support us on Kickstarter
+
+# Placeholder until the campaign page is live. Every Kickstarter button reads it.
+kickstarter:
+  url: https://www.kickstarter.com/projects/unlogicgames/steamdreams
+  cta: Support us on Kickstarter
+
+# Placeholder until the PDF is in the repo at this path.
+dossier:
+  url: assets/steamdreams-friends-and-family-dossier.pdf
+  cta: Download the Friends & Family dossier
+
+lead:
+  title: Everything may shift in transit.
+  title_a: Everything may
+  title_b: shift
+  title_c: in transit.
+  video_badge: In-engine · WIP
+  video_caption: Same workshop. A different story for every player.
+  copy: A steampunk workshop run by three goblin siblings, where an AI running on your PC makes every character, order and headline react to you. No servers. No subscription. Nobody else will live your story.
+  trailer: See how a job goes
+
+bench:
+  heading: Same bench. Never the same workshop.
+  deck: In the workshop, building is choosing. How you handle each job says who you are, and Lightower is paying attention.
+  steps:
+    - name: The order
+      text: Someone knocks with a broken steambot. Take the job, or send them away.
+    - name: The build
+      text: Do what they asked, or what you think they need. They'll remember which.
+    - name: The deadline
+      text: Rush it tonight or do it right tomorrow. The queue at the door is watching.
+    - name: The delivery
+      text: Hand it over and see what comes back. By morning, the city knows how you work.
+
+choose:
+  heading: What happens when you choose?
+  deck: In a regular narrative game, the answer was already written. In SteamDreams it gets written on your PC, right then.
+  hand:
+    label: Hand-written only
+    title: You pick between paths that already exist
+    stamp: The end
+    items:
+      - Writers prepare every possible answer in advance
+      - If two players choose the same thing, they see the same scene
+      - Once you've seen it all, the story is over
+  local:
+    label: Hand-written + local AI
+    title: Your choice opens a new path
+    count: scenes in this run, and counting
+    items:
+      - Our team writes the world, the characters, the main plot and the endings
+      - "The local AI improvises what happens in between: dialogue, orders, consequences and headlines"
+      - Characters remember what you did. No two players get the same run
+
+world:
+  heading: A living world. No live service.
+  does_title: The local AI does
+  does:
+    - Improvise what characters say, in character
+    - Remember your choices and bring them back later
+    - Create orders and customers based on how your workshop is doing
+    - Write your own Lightower Gazette
+  never_title: The local AI never
+  never:
+    - Generate the art, the characters or the environments
+    - "Replace our writers: it improvises inside their world"
+    - Send your playthrough to any server
+    - Ask for a connection, an account or a subscription
+
+gazette:
+  heading: You choose. Lightower remembers.
+  loop:
+    - You take an order. Or you turn it down.
+    - The siblings remember how you handled it.
+    - The city shifts in transit.
+    - Your Gazette reports it the next morning.
+  kicker: Your edition. Nobody else gets it.
+  edition: Edition
+  desk: Today at the workshop
+  try: Pick one and read tomorrow's paper.
+  note: In the game, the local AI writes each edition from what you did. On this page, our writers wrote these three.
+  story:
+    ask: A very nervous stranger knocks at midnight with a steambot that has swallowed a pocket watch.
+    intro:
+      headline: STEAMDREAMS OPENS ITS DOORS. LIGHTOWER HOLDS ITS BREATH.
+      body: Three goblin siblings have taken over the old workshop on the canal. Neighbours report steam, shouting and, once, applause.
+      quote: "TINKEL: “We’re open. Mostly.”"
+    options:
+      - choice: Fix it that same night
+        headline: WORKSHOP FIXES STEAMBOT AT MIDNIGHT. QUEUE REACHES THE CANAL.
+        body: By morning, half the street had found something broken at home. Rival workshops call it unfair competition.
+        quote: "VEXOR: “Generosity doesn’t pay for coal.”"
+      - choice: Charge double
+        headline: STEAMDREAMS DISCOVERS THE NIGHT RATE.
+        body: The stranger paid without a word and left faster than he came. The Gazette has received eleven letters about it.
+        quote: "VEXOR: “Finally, someone here understands business.”"
+      - choice: Let Vexor “improve” it
+        headline: STEAMBOT NOW CHIMES EVERY HOUR. LOUDLY.
+        body: Vexor fitted a module nobody asked for. The watch is still inside. The owner has asked for a second opinion.
+        quote: "TINKEL: “I said no. I said no in writing.”"
+
+made:
+  heading: Everything you see was made by people.
+  copy: Concept art, characters, music, 3D and UI are made by our team. The local AI writes words, never pictures.
+
+close:
+  label: The workshop keeps going
+  copy: If you want Lightower to exist, support us on Kickstarter.
+  ai_note: SteamDreams uses a language model that runs on your PC for dialogue, character memory and the Gazette. All art is made by our artists. Your playthroughs never leave your machine.
+
+welcome:
+  heading: Welcome to Steam Dreams
+  copy:
+    - text: >
+        A new day dawns in Steamdreams. You are Vexor, one of three sibling
+        owners of SteamDreams, a new Steambots workshop aspiring to be the
+        best in Lightower City. You'll have to cater to eccentric customers,
+        take care of your employees, suppliers, and much more.
+    - text: >
+        Talking to everyone and exploring the workshop, you'll discover
+        hints and facts that can take your life down very different paths.
+        So choose your words with care.
+    - text: "…one more thing… Everyone can be nice, or a complete bastard. Including you."
+
+workshop:
+  day_alt: The goblins' workshop by day, sun through the arched windows
+  night_alt: The same workshop at night, lit by its own lamps
+
+dividers:
+  office_alt: A Lightower office, brass fittings and papers in warm lamplight
+  workshop_alt: The SteamDreams workshop floor, stations and hanging steam
+
+features:
+  heading: Connect with a whole world in offline mode
+  items:
+    - title: A full world alive offline
+      image: world.jpg
+      text: Emergent Narrative that never needs a server — our technology called Dynamic Narrative Assembler runs a series of AI systems including fine-tuned local LLM on-device, generating living, characterful dialogue in real time. The shop, the staff, and the city keep moving on-device.
+    - title: Lead the Workshop
+      image: workshop-lead.jpg
+      text: "Run the daily shop: choose builds and jobs, negotiate suppliers, manage and train workers, and upgrade the workshop. Coordinate multi-step steambot work across stations, then balance the day cycle of crafting, repairs, customer tasks, cleanup, minigames, and stamina/resources."
+    - title: Every word counts
+      images:
+        - battle.jpg
+        - battle-dialogue.jpg
+        - battle-choice.jpg
+      text: "Every line you choose moves something. What you say to a customer, a supplier or your own siblings sets the price of the job, the trust between you and how they greet you tomorrow. Say it kindly or say it sharply: people in Lightower remember what you said, and they answer in kind."
+
+reel:
+  - image: vexor.png
+    alt: "Character concept sheet: goblin shopkeeper studies"
+  - image: tinkel.png
+    alt: "Character concept sheet: goblin mechanic turnaround"
+  - image: grindel.png
+    alt: "Character concept sheet: goblin alchemist studies"
+  - image: steambots-lineup.png
+    alt: "Steambot concept studies: chassis modules, bellows and limbs"
+  - image: steambots-core.png
+    alt: Steambot core studies and sliding-door chassis
+
+look:
+  heading: Green is the new Black
+  items:
+    - title: Setting
+      image: env-office.png
+      zoom: 1.7
+      focus: 46% 36%
+      text: "A cozy steampunk world of steam + psycho-alchemy, centered on Lightower City and its goblin workshop culture, with a multi-race cast (goblins, dwarves, humans, elves, and more)."
+    - title: Tone
+      image: tinkel.png
+      text: Warm, charming, and humorous, with systemic emotional depth beneath the coziness.
+    - title: Art direction
+      image: workshop-day.png
+      text: Painterly, hand-crafted aesthetic with strong material definition and a warm, cozy lighting filter; all concept art, music, 3D, and UI created in-house (no generative-AI art assets).
+    - title: Identity
+      image: steambots-core.png
+      text: Steambots — born of steam and psycho-alchemy — are the central visual and narrative differentiator of the IP.
+
+roadmap:
+  heading: Roadmap
+  items:
+    - year: "2027"
+      text: Early Access mid 2027. Version 1.0 early 2028.
+    - year: "2028"
+      text: Consoles follow late in the year, when Version 1.0 ships as a premium, single-player game that runs fully offline.
+    - year: "2029"
+      text: Free content and expansions through the end of 2029.
+
+contact:
+  heading: Contact
+  copy:
+    - text: Unlogic Games — SteamDreams: Lab & Workshop.
+    - text: press@unlogic.games
+    - text: contact@unlogic.games
+    - text: https://unlogicgames.substack.com/
+    - text: https://www.unlogicgames.com/
+
+positioning:
+  heading: Not another indie game
+  items:
+    - label: Genre
+      text: Top-Down workshop-management & business sim fused with an emergent, systemic narrative RPG.
+    - label: Pitch in a line
+      text: "*RimWorld* meets *Cult of the Lamb* — cozy, characterful, and systemically deep."
+    - label: Experience
+      text: You play one of three goblin siblings who open a steambot repair-and-build workshop in the bustling, psycho-alchemical metropolis of Lightower City. Craft, repair, manage a crew of goblins and steambots, build relationships, and climb the city’s Popularity Ranking — with stories that emerge from systems rather than scripted trees.
+
+timing:
+  heading: When and where
+  items:
+    - label: Studio launch
+      text: Unlogic Games launched publicly in May 2026.
+    - label: Next milestone
+      text: A public-facing vertical slice / demo targeting Gamescom 2026.
+    - label: Distribution
+      text: PC-first launch on Steam, with console releases to follow as part of this partner program.
+    - label: Market position
+      text: A premium, single-player, offline title in the cozy-management + narrative space, differentiated by proprietary emergent-narrative technology.
+
+audience:
+  heading: For players and goblins
+  items:
+    - label: Core
+      text: "Fans of colony / management & cozy sims — *RimWorld*, *Cult of the Lamb*, *Stardew Valley*, *Spiritfarer*, *Two Point* series."
+    - label: Secondary
+      text: Narrative-RPG and systemic-storytelling enthusiasts who value replayable, emergent stories.
+    - label: Tertiary
+      text: Steampunk and stylized-fantasy fans drawn to a distinctive painterly art world.
+    - label: Profile
+      text: Players who prefer thoughtful, single-player, offline experiences over live-service; comfortable on both PC and console.
+
+platforms:
+  items:
+    - label: PlayStation
+      text: PS5 and next-gen PlayStation.
+    - label: Xbox
+      text: Xbox Series X|S and next-gen Xbox.
+    - label: Nintendo
+      text: Switch 2.
+    - label: PC
+      text: "Windows, macOS, and Linux (distributed via Steam)."
+    - label: "Engine & tech"
+      text: Unreal Engine 5.7 with a dedicated C++ core. A proprietary on-device AI subsystem powers narrative locally, fully offline — no server dependency for players.
