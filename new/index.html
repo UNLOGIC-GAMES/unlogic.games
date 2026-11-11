@@ -677,6 +677,42 @@
       display: flex; flex-direction: column;
       padding-bottom: clamp(3rem, 7vw, 6rem);
     }
+    /* The workshop behind the header, screened into dots so it reads as
+       texture, not as a second picture competing with the video. */
+    .home-bg {
+      position: absolute; inset: 0; z-index: -1;
+      overflow: hidden; pointer-events: none;
+      --dot: 0.24rem;
+      -webkit-mask-image:
+        radial-gradient(circle, #000 34%, transparent 58%),
+        linear-gradient(to bottom, rgba(0, 0, 0, .55), #000 30%, #000 62%, transparent 100%);
+      -webkit-mask-size: var(--dot) var(--dot), 100% 100%;
+      -webkit-mask-composite: source-in;
+      mask-image:
+        radial-gradient(circle, #000 34%, transparent 58%),
+        linear-gradient(to bottom, rgba(0, 0, 0, .55), #000 30%, #000 62%, transparent 100%);
+      mask-size: var(--dot) var(--dot), 100% 100%;
+      mask-composite: intersect;
+    }
+    .home-bg img {
+      position: absolute; inset: -4%; width: 108%; height: 108%;
+      object-fit: cover; object-position: center 42%;
+      opacity: .68;
+      filter: saturate(1.15) contrast(1.15);
+      animation: drift 38s ease-in-out infinite alternate;
+    }
+    .home-bg .night { opacity: 0; animation: drift 38s ease-in-out infinite alternate, dusk 18s ease-in-out infinite alternate; }
+    .home-bg::after {
+      content: ""; position: absolute; inset: 0;
+      background:
+        linear-gradient(90deg, rgba(9, 12, 14, .62), rgba(9, 12, 14, .12) 48%, rgba(9, 12, 14, .55)),
+        radial-gradient(60% 50% at 50% 12%, rgba(9, 12, 14, .55), transparent 70%);
+    }
+    @keyframes drift { from { transform: scale(1) translate(0, 0); } to { transform: scale(1.05) translate(-1.2%, 0.8%); } }
+    @keyframes dusk { 0%, 30% { opacity: 0; } 70%, 100% { opacity: .68; } }
+    @media (prefers-reduced-motion: reduce) {
+      .home-bg img, .home-bg .night { animation: none; }
+    }
     .sign {
       --sign-w: min(32rem, 76vw);
       position: relative; align-self: center;
@@ -1415,6 +1451,10 @@
   <div class="stack">
 
     <header class="home">
+      <div class="home-bg" aria-hidden="true">
+        <img src="assets/images/workshop-day.png" alt="">
+        <img class="night" src="assets/images/workshop-night.png" alt="">
+      </div>
       <div class="sign">
         <span class="chain" aria-hidden="true"></span>
         <span class="chain" aria-hidden="true"></span>
