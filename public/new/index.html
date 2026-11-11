@@ -48,6 +48,9 @@
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; padding: 0; }
+    /* Layout is sized in rem for a 1920px-wide screen. Past that, the root
+       size grows with the viewport so 2K and 4K get the same composition. */
+    html { font-size: clamp(100%, 100vw / 120, 200%); }
     html { scroll-behavior: smooth; }
     body {
       background: var(--ink);
@@ -711,8 +714,19 @@
       font-size: clamp(4.8rem, 10.5vw, 9.2rem); line-height: 0.84;
       font-style: italic; color: var(--amber);
     }
-    .shift-title .w { display: inline-block; }
+    .shift-title .w { display: inline-block; cursor: default; transition: transform .5s cubic-bezier(.34, 1.56, .64, 1); }
     .shift-title .w.jolt { animation: jolt .45s steps(3) 1; }
+    .shift-title .w.nudge { animation: nudge .55s cubic-bezier(.34, 1.56, .64, 1) 1; }
+    .shift-title .w.knock { animation: knock .7s cubic-bezier(.22, 1.4, .36, 1) 1; }
+    @keyframes nudge {
+      30% { transform: translateY(-0.08em) rotate(-3deg); }
+      65% { transform: translateY(0.03em) rotate(2deg); }
+    }
+    @keyframes knock {
+      18% { transform: translate(0.05em, -0.16em) rotate(5deg) scale(1.06); text-shadow: 0.05em 0 var(--teal), -0.05em 0 #ff7a5c; }
+      42% { transform: translate(-0.06em, 0.05em) rotate(-4deg) scale(.97); }
+      68% { transform: translate(0.02em, -0.03em) rotate(1.5deg); }
+    }
     @keyframes jolt {
       33% { transform: translate(-0.08em, 0.04em) skewX(-8deg); text-shadow: 0.06em 0 var(--teal), -0.06em 0 #ff7a5c; }
       66% { transform: translate(0.06em, -0.03em) skewX(6deg); text-shadow: -0.04em 0 var(--teal), 0.04em 0 #ff7a5c; }
@@ -747,7 +761,7 @@
       font-size: 0.95rem; font-style: italic; color: rgba(255, 232, 186, .6);
     }
     @media (prefers-reduced-motion: reduce) {
-      .sign, .screen-badge::before, .shift-title .w.jolt { animation: none; }
+      .sign, .screen-badge::before, .shift-title .w.jolt, .shift-title .w.nudge, .shift-title .w.knock { animation: none; }
     }
     @media (min-width: 52rem) and (max-height: 46rem) {
       .home { --drop: 3.2rem; }
@@ -1231,6 +1245,17 @@
     .side.local .side-label { color: var(--teal); }
     .side h3 { color: var(--art-cream); }
     .side.never h3 { color: rgba(246, 241, 228, .55); }
+    .side h3 .verb { font-style: italic; color: var(--teal); }
+    .side.never h3 .verb {
+      color: #ff7a5c; text-transform: uppercase; letter-spacing: 0.04em;
+      text-decoration: underline; text-decoration-thickness: 0.08em; text-underline-offset: 0.18em;
+    }
+    .welcome-scene { margin: clamp(2.6rem, 6vw, 4.5rem) auto 0; max-width: 64rem; }
+    .welcome-scene img {
+      display: block; width: 100%; height: auto;
+      border-radius: 1.2rem;
+      box-shadow: 0 1.8rem 4rem rgba(0, 0, 0, .55), 0 0 0 0.06rem rgba(255, 232, 186, .18);
+    }
     .paths .ln path { stroke: rgba(255, 232, 186, .34); }
     .paths .ln .stub { stroke: var(--teal); }
     .paths .node { fill: var(--amber); }
@@ -1343,7 +1368,7 @@
 
   </style>
 </head>
-<body data-content="content-v2.yaml?v=7">
+<body data-content="content-v2.yaml?v=8">
   <div id="gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
     <form id="gate-form">
       <p id="gate-title">SteamDreams</p>
@@ -1430,12 +1455,9 @@
         </div>
       </div>
 
-      <div class="daynight">
-        <img src="assets/images/workshop-day.png" alt="" data-alt="workshop.day_alt">
-        <img class="night" src="assets/images/workshop-night.png" alt="" data-alt="workshop.night_alt">
-        <img class="vapor" src="assets/images/steam-plume-a.png" alt="" style="left:1%;bottom:-6%;width:min(13rem,42vw);opacity:.42;">
-        <img class="vapor" src="assets/images/steam-plume-c.png" alt="" style="right:28%;bottom:-3.5%;width:min(9rem,28vw);opacity:.3;">
-      </div>
+      <figure class="rail welcome-scene">
+        <img src="assets/images/look/welcome-workshop.jpg" alt="" data-alt="workshop.scene_alt" width="1800" height="987" loading="lazy">
+      </figure>
 
       <section class="scene bench-scene" id="bench">
         <div class="pin">
@@ -1491,11 +1513,11 @@
         <div class="card">
           <div class="versus">
             <section class="side">
-              <h3 data-text="world.does_title"></h3>
+              <h3><span data-text="world.does_lead"></span> <em class="verb" data-text="world.does_word"></em></h3>
               <ul class="ticks" data-list="world.does"></ul>
             </section>
             <section class="side never">
-              <h3 data-text="world.never_title"></h3>
+              <h3><span data-text="world.never_lead"></span> <em class="verb" data-text="world.never_word"></em></h3>
               <ul class="ticks" data-list="world.never"></ul>
             </section>
           </div>
@@ -1575,7 +1597,7 @@
 
   </div>
 
-  <script src="assets/js/scenes.js?v=12"></script>
+  <script src="assets/js/scenes.js?v=13"></script>
   <script src="assets/js/page.js?v=24"></script>
 </body>
 </html>

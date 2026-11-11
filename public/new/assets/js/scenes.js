@@ -287,6 +287,19 @@
     });
     var words = title.querySelectorAll(".w");
     var rand = seeded(3);
+    function play(w, name) {
+      if (reduce.matches) return;
+      w.classList.remove("jolt", "nudge", "knock");
+      void w.offsetWidth;
+      w.classList.add(name);
+    }
+    Array.prototype.forEach.call(words, function (w) {
+      w.addEventListener("pointerenter", function () {
+        if (!w.classList.contains("knock")) play(w, "nudge");
+      });
+      w.addEventListener("click", function () { play(w, "knock"); });
+      w.addEventListener("animationend", function () { w.classList.remove("jolt", "nudge", "knock"); });
+    });
     setInterval(function () {
       if (document.hidden || reduce.matches) return;
       var w = words[Math.floor(rand() * words.length)];
