@@ -181,21 +181,16 @@ look:
   heading: Green is the new Black
   items:
     - title: Setting
-      images:
-        - look/setting-townsfolk.jpg
-        - look/setting-crew.jpg
+      image: look/setting-lineup.jpg
       text: "A cozy steampunk world of steam + psycho-alchemy, centered on Lightower City and its goblin workshop culture, with a multi-race cast (goblins, dwarves, humans, elves, and more)."
     - title: Tone
-      images:
-        - look/tone-grindel.jpg
-        - look/tone-vexor.jpg
-        - look/tone-tinkel.jpg
+      image: look/tone-grindel-client.jpg
       text: Warm, charming, and humorous, with systemic emotional depth beneath the coziness.
     - title: Art direction
       image: workshop-day.png
       text: Painterly, hand-crafted aesthetic with strong material definition and a warm, cozy lighting filter; all concept art, music, 3D, and UI created in-house (no generative-AI art assets).
     - title: Identity
-      image: look/identity-steambot.jpg
+      image: look/identity-chassis.jpg
       text: Steambots, born of steam and psycho-alchemy, are the central visual and narrative differentiator of the IP.
 
 roadmap:
