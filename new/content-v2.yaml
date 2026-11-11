@@ -30,7 +30,7 @@ lead:
   title_c: in transit.
   video_badge: In-engine · WIP
   video_caption: Same workshop. A different story for every player.
-  copy: A steampunk workshop run by three goblin siblings, where an AI running on your PC makes every character, order and headline react to you. No servers. No subscription. Nobody else will live your story.
+  copy: A steampunk workshop run by three goblin siblings, where every character, order and headline reacts to you, thanks to an AI running directly on your machine. No servers. No subscription. Nobody else will live your story.
   trailer: See how a job goes
 
 bench:
@@ -63,18 +63,22 @@ choose:
     count: scenes in this run, and counting
     items:
       - Our team writes the world, the characters, the main plot and the endings
-      - "The local AI improvises what happens in between: dialogue, orders, consequences and headlines"
+      - "Everything in between (dialogue, orders, consequences and headlines) is improvised inside that world by the local AI"
       - Characters remember what you did. No two players get the same run
 
 world:
   heading: A living world. No live service.
   does_title: The local AI does
+  does_lead: The local AI
+  does_word: does
   does:
     - Improvise what characters say, in character
     - Remember your choices and bring them back later
     - Create orders and customers based on how your workshop is doing
     - Write your own Lightower Gazette
-  never_title: The local AI never
+  never_title: The local AI doesn't
+  never_lead: The local AI
+  never_word: doesn't
   never:
     - Generate the art, the characters or the environments
     - "Replace our writers: it improvises inside their world"
@@ -115,7 +119,7 @@ gazette:
 
 made:
   heading: Everything you see was made by people.
-  copy: Concept art, characters, music, 3D and UI are made by our team. The local AI writes words, never pictures.
+  copy: Concept art, characters, story, music, 3D, UI… everything is made by our team. The local AI only rewords and enhances our narrative.
 
 close:
   label: The workshop keeps going
@@ -139,6 +143,7 @@ welcome:
 workshop:
   day_alt: The goblins' workshop by day, sun through the arched windows
   night_alt: The same workshop at night, lit by its own lamps
+  scene_alt: Vexor offers a new module he just made while Tinkel fights with a steambot at the bench
 
 dividers:
   office_alt: A Lightower office, brass fittings and papers in warm lamplight
@@ -149,7 +154,7 @@ features:
   items:
     - title: A full world alive offline
       image: world.jpg
-      text: Emergent Narrative that never needs a server — our technology called Dynamic Narrative Assembler runs a series of AI systems including fine-tuned local LLM on-device, generating living, characterful dialogue in real time. The shop, the staff, and the city keep moving on-device.
+      text: The shop, the staff and the city keep moving without ever needing a server. Characters talk with their own personality and answer you in real time, powered by our Dynamic Narrative Assembler, a set of systems, including a fine-tuned local AI, that runs entirely on your device.
     - title: Lead the Workshop
       image: workshop-lead.jpg
       text: "Run the daily shop: choose builds and jobs, negotiate suppliers, manage and train workers, and upgrade the workshop. Coordinate multi-step steambot work across stations, then balance the day cycle of crafting, repairs, customer tasks, cleanup, minigames, and stamina/resources."
@@ -176,19 +181,22 @@ look:
   heading: Green is the new Black
   items:
     - title: Setting
-      image: env-office.png
-      zoom: 1.7
-      focus: 46% 36%
+      images:
+        - look/setting-townsfolk.jpg
+        - look/setting-crew.jpg
       text: "A cozy steampunk world of steam + psycho-alchemy, centered on Lightower City and its goblin workshop culture, with a multi-race cast (goblins, dwarves, humans, elves, and more)."
     - title: Tone
-      image: tinkel.png
+      images:
+        - look/tone-grindel.jpg
+        - look/tone-vexor.jpg
+        - look/tone-tinkel.jpg
       text: Warm, charming, and humorous, with systemic emotional depth beneath the coziness.
     - title: Art direction
       image: workshop-day.png
       text: Painterly, hand-crafted aesthetic with strong material definition and a warm, cozy lighting filter; all concept art, music, 3D, and UI created in-house (no generative-AI art assets).
     - title: Identity
-      image: steambots-core.png
-      text: Steambots — born of steam and psycho-alchemy — are the central visual and narrative differentiator of the IP.
+      image: look/identity-steambot.jpg
+      text: Steambots, born of steam and psycho-alchemy, are the central visual and narrative differentiator of the IP.
 
 roadmap:
   heading: Roadmap
