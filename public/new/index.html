@@ -1286,23 +1286,13 @@
       color: #ff7a5c; text-transform: uppercase; letter-spacing: 0.04em;
       text-decoration: underline; text-decoration-thickness: 0.08em; text-underline-offset: 0.18em;
     }
-    /* The print has no paper: the goblins stand straight on the page, lit by
-       the same warm lamp that hangs over the workbench below. */
+    /* Only the blank paper drops out. The drawing keeps the colours Géraud painted. */
     .welcome-scene {
-      position: relative; isolation: isolate;
-      margin: clamp(1.5rem, 4vw, 3rem) auto 0; max-width: 70rem;
+      position: relative;
+      margin: clamp(1.5rem, 4vw, 3rem) auto 0; max-width: 68rem;
     }
-    .welcome-scene::before {
-      content: ""; position: absolute; inset: -8% -10% -14%; z-index: -1; pointer-events: none;
-      background:
-        radial-gradient(42% 46% at 50% 50%, rgba(255, 196, 110, .22), rgba(255, 174, 66, .06) 60%, transparent 74%),
-        radial-gradient(30% 22% at 50% 88%, rgba(255, 210, 140, .12), transparent 70%);
-    }
-    .welcome-scene > img:first-child {
+    .welcome-scene img {
       display: block; width: 100%; height: auto;
-      -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 99%);
-      mask-image: linear-gradient(to bottom, #000 78%, transparent 99%);
-      filter: brightness(1.1) saturate(1.08) drop-shadow(0 1.4rem 2rem rgba(0, 0, 0, .45));
     }
     .paths .ln path { stroke: rgba(255, 232, 186, .34); }
     .paths .ln .stub { stroke: var(--teal); }
@@ -1508,7 +1498,7 @@
       </div>
 
       <figure class="rail welcome-scene">
-        <img src="assets/images/look/welcome-workshop.webp" alt="" data-alt="workshop.scene_alt" width="2400" height="1316" loading="lazy">
+        <img src="assets/images/look/welcome-workshop-ink.webp" alt="" data-alt="workshop.scene_alt" width="2800" height="1535" loading="lazy">
       </figure>
 
       <section class="scene bench-scene" id="bench">
