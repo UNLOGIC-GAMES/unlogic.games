@@ -338,6 +338,11 @@
       built.open = open;
       return built;
     });
+    var dive = document.querySelector(".dive-scene");
+    var divePin = dive && dive.querySelector(".pin");
+    var diveFig = dive && dive.querySelector(".welcome-scene");
+    var diveArt = dive && dive.querySelector(".dive-art");
+    var diveSteam = dive && dive.querySelector(".dive-steam");
     var stamp = choose && choose.querySelector(".stamp");
     var count = choose && choose.querySelector(".count b");
     var openDiagram = choose && choose.querySelector(".side.local .diagram");
@@ -347,8 +352,45 @@
     var spinRaf = 0;
     var CYCLE = 5.4;
 
+    function smooth(t) { return t * t * (3 - 2 * t); }
+
+    function paintDive(live) {
+      if (!live) {
+        diveArt.style.transform = "";
+        diveArt.style.opacity = "";
+        diveArt.style.removeProperty("--r");
+        diveArt.style.removeProperty("--soft");
+        divePin.style.removeProperty("--glow");
+        if (diveSteam) { diveSteam.style.opacity = ""; diveSteam.style.transform = ""; }
+        return;
+      }
+      var p = sceneProgress(dive);
+      var w = diveFig.offsetWidth;
+      var h = diveFig.offsetHeight;
+      var fx = parseFloat(getComputedStyle(diveFig).getPropertyValue("--fx")) / 100 * w;
+      var fy = parseFloat(getComputedStyle(diveFig).getPropertyValue("--fy")) / 100 * h;
+      var zoom = smooth(clamp((p - 0.08) / 0.7));
+      var iris = smooth(clamp((p - 0.3) / 0.52));
+      var gone = smooth(clamp((p - 0.84) / 0.16));
+      var k = 1 + 2.1 * zoom;
+      diveArt.style.transform =
+        "translate(" + ((w / 2 - fx) * zoom).toFixed(1) + "px," + ((h / 2 - fy) * zoom).toFixed(1) + "px) scale(" + k.toFixed(4) + ")";
+      var far = Math.hypot(w, h);
+      diveArt.style.setProperty("--r", (far + (0.075 * w - far) * iris).toFixed(1) + "px");
+      diveArt.style.setProperty("--soft", (0.06 * w * iris).toFixed(1) + "px");
+      diveArt.style.opacity = (1 - 0.6 * gone).toFixed(3);
+      divePin.style.setProperty("--glow", iris.toFixed(3));
+      if (diveSteam) {
+        var s = clamp((p - 0.55) / 0.5);
+        diveSteam.style.opacity = (Math.sin(Math.PI * s) * 0.6).toFixed(3);
+        diveSteam.style.transform = "translateY(" + (-12 * s).toFixed(2) + "rem) scale(" + (0.8 + 0.5 * s).toFixed(3) + ")";
+      }
+    }
+
     function paint() {
       var live = root.classList.contains("scenes");
+
+      if (diveArt && diveFig && divePin) paintDive(live);
 
       if (bench && frames.length) {
         if (live) {

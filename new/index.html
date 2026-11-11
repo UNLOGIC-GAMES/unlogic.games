@@ -1286,11 +1286,46 @@
       color: #ff7a5c; text-transform: uppercase; letter-spacing: 0.04em;
       text-decoration: underline; text-decoration-thickness: 0.08em; text-underline-offset: 0.18em;
     }
-    .welcome-scene { margin: clamp(2.6rem, 6vw, 4.5rem) auto 0; max-width: 64rem; }
-    .welcome-scene img {
+    .welcome-scene { position: relative; margin: clamp(2.6rem, 6vw, 4.5rem) auto 0; max-width: 64rem; }
+    .dive-art img {
       display: block; width: 100%; height: auto;
       border-radius: 1.2rem;
       box-shadow: 0 1.8rem 4rem rgba(0, 0, 0, .55), 0 0 0 0.06rem rgba(255, 232, 186, .18);
+    }
+    /* Without the scroll scene the plume just trails off the print into the bench below. */
+    .dive-steam {
+      position: absolute; left: calc(var(--fx) - 14%); top: 82%; width: 28%;
+      opacity: .32; pointer-events: none;
+      transform: rotate(180deg);
+    }
+
+    /* The camera walks into the print: it settles on the steambot sitting on
+       the bench, the paper closes around it and the steam carries the reader
+       into the workbench scene, which starts on the same bot. */
+    .scenes .dive-scene { height: 250vh; }
+    .scenes .dive-scene .pin {
+      position: sticky; top: 0; height: 100vh;
+      display: flex; align-items: center;
+      overflow: hidden;
+    }
+    .scenes .dive-scene .pin::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(34% 40% at 50% 52%, rgba(255, 196, 110, .26), rgba(255, 174, 66, .07) 55%, transparent 72%);
+      opacity: var(--glow, 0);
+    }
+    .scenes .welcome-scene { width: 100%; margin-top: 0; }
+    .scenes .dive-art {
+      transform-origin: var(--fx) var(--fy);
+      will-change: transform;
+      -webkit-mask-image: radial-gradient(circle at var(--fx) var(--fy), #000 var(--r, 3000px), transparent calc(var(--r, 3000px) + var(--soft, 0px)));
+      mask-image: radial-gradient(circle at var(--fx) var(--fy), #000 var(--r, 3000px), transparent calc(var(--r, 3000px) + var(--soft, 0px)));
+    }
+    .scenes .dive-steam {
+      left: 50%; top: 50%; width: min(34rem, 44vw);
+      translate: -50% -70%;
+      transform: none;
+      opacity: 0;
+      will-change: opacity, transform;
     }
     .paths .ln path { stroke: rgba(255, 232, 186, .34); }
     .paths .ln .stub { stroke: var(--teal); }
@@ -1495,9 +1530,16 @@
         </div>
       </div>
 
-      <figure class="rail welcome-scene">
-        <img src="assets/images/look/welcome-workshop.jpg" alt="" data-alt="workshop.scene_alt" width="1800" height="987" loading="lazy">
-      </figure>
+      <section class="scene dive-scene">
+        <div class="pin">
+          <figure class="rail welcome-scene" style="--fx:51.7%;--fy:70%">
+            <div class="dive-art">
+              <img src="assets/images/look/welcome-workshop.jpg" alt="" data-alt="workshop.scene_alt" width="2800" height="1535" loading="lazy">
+            </div>
+            <img class="dive-steam" src="assets/images/steam-plume-b.png" alt="" aria-hidden="true">
+          </figure>
+        </div>
+      </section>
 
       <section class="scene bench-scene" id="bench">
         <div class="pin">
@@ -1637,7 +1679,7 @@
 
   </div>
 
-  <script src="assets/js/scenes.js?v=13"></script>
+  <script src="assets/js/scenes.js?v=14"></script>
   <script src="assets/js/page.js?v=24"></script>
 </body>
 </html>
