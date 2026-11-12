@@ -928,19 +928,28 @@
       position: absolute; left: 14%; right: 14%; bottom: 6%; height: 9%;
       background: radial-gradient(closest-side, rgba(0, 0, 0, .55), transparent);
     }
+    /* The painting that is leaving stays fully painted underneath (.hold).
+       Fading it out, or animating blur and brightness, flashes a white frame
+       on some phones before the next image is ready. */
     .bot-frame {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
       opacity: 0;
-      transform: translateY(3%) scale(.9) rotate(-3deg);
-      filter: blur(0.7rem) brightness(1.6) drop-shadow(0 1.2rem 1.4rem rgba(0, 0, 0, .45));
-      transition: opacity .45s ease, transform .5s ease, filter .45s ease;
+      z-index: 1;
+      transform: scale(.97);
+      background: transparent;
+      transition: none;
+      pointer-events: none;
+    }
+    .bot-frame.hold {
+      opacity: 1;
+      transform: none;
     }
     .bot-frame.on {
       opacity: 1;
+      z-index: 2;
       transform: none;
-      filter: blur(0) brightness(1) drop-shadow(0 1.2rem 1.4rem rgba(0, 0, 0, .45));
-      transition: opacity .55s ease .12s, transform .8s cubic-bezier(.2, 1.35, .4, 1) .12s, filter .7s ease .12s;
+      transition: opacity .4s ease, transform .55s ease;
     }
     .puff {
       position: absolute; left: 22%; bottom: 18%; width: 56%;
@@ -952,7 +961,7 @@
       100% { opacity: 0; transform: translateY(-28%) scale(1.25); }
     }
     @media (prefers-reduced-motion: reduce) {
-      .bot-frame, .bot-frame.on { transform: none; filter: drop-shadow(0 1.2rem 1.4rem rgba(0, 0, 0, .45)); transition: opacity .2s ease; }
+      .bot-frame, .bot-frame.on, .bot-frame.hold { transform: none; transition: none; }
       .puff.go { animation: none; }
     }
     /* Phones keep the whole bench on one screen: the painting on top, the
@@ -1756,7 +1765,7 @@
 
   </div>
 
-  <script src="assets/js/scenes.js?v=19"></script>
+  <script src="assets/js/scenes.js?v=20"></script>
   <script src="assets/js/page.js?v=25"></script>
 </body>
 </html>
