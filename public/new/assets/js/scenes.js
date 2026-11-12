@@ -3,6 +3,7 @@
   var root = document.documentElement;
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
   var roomy = window.matchMedia("(min-width: 52rem) and (min-height: 40rem)");
+  var phone = window.matchMedia("(max-width: 52rem)");
 
   function clamp(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
   function seeded(seed) {
@@ -415,6 +416,7 @@
         loop = 0;
       }
       syncSpin();
+      autoplay();
       paint();
     }
 
@@ -432,7 +434,7 @@
        is the live one. On phones that lights the painting inside the step. */
     if (bench && steps.length && "IntersectionObserver" in window) {
       var stepIo = new IntersectionObserver(function (entries) {
-        if (root.classList.contains("scenes")) return;
+        if (root.classList.contains("scenes") || phone.matches) return;
         entries.forEach(function (entry) {
           if (entry.isIntersecting) build(steps.indexOf(entry.target));
         });
@@ -440,11 +442,51 @@
       steps.forEach(function (s) { stepIo.observe(s); });
     }
 
+    /* Phones show the bench on one screen and turn the steps over by
+       themselves while it is in view. A tap jumps to a step. */
+    var list = bench && bench.querySelector(".build-steps");
+    var STEP_MS = 3600;
+    var benchSeen = false;
+    var turn = 0;
+    function autoplay() {
+      clearInterval(turn);
+      turn = 0;
+      var on = list && phone.matches && benchSeen && !reduce.matches;
+      if (list) list.classList.toggle("auto", !!on);
+      if (!on) return;
+      list.style.setProperty("--step-time", STEP_MS + "ms");
+      turn = setInterval(function () {
+        if (!document.hidden) build((stage + 1) % steps.length);
+      }, STEP_MS);
+    }
+    steps.forEach(function (s, k) {
+      var tab = s.querySelector("b");
+      if (!tab) return;
+      tab.setAttribute("tabindex", "0");
+      tab.setAttribute("role", "button");
+      function pick() {
+        if (root.classList.contains("scenes")) return;
+        build(k);
+        autoplay();
+      }
+      tab.addEventListener("click", pick);
+      tab.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); }
+      });
+    });
+    if (list && "IntersectionObserver" in window) {
+      new IntersectionObserver(function (entries) {
+        benchSeen = entries[0].isIntersecting;
+        autoplay();
+      }, { threshold: 0.6 }).observe(bench.querySelector(".bench-grid") || bench);
+    }
+
     window.addEventListener("scroll", function () { syncSpin(); schedule(); }, { passive: true });
     window.addEventListener("resize", schedule);
     if (reduce.addEventListener) {
       reduce.addEventListener("change", mode);
       roomy.addEventListener("change", mode);
+      phone.addEventListener("change", mode);
     }
     mode();
   }
