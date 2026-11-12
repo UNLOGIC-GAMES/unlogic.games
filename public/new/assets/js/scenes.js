@@ -315,6 +315,11 @@
     var bench = document.querySelector(".bench-scene");
     var choose = document.querySelector(".choose-scene");
     var frames = bench ? Array.prototype.slice.call(bench.querySelectorAll(".bot-frame")) : [];
+    /* Decode every painting up front. A phone otherwise shows a white
+       frame while the next webp is still being decoded. */
+    frames.forEach(function (f) {
+      if (f.decode) f.decode().catch(function () {});
+    });
     var steps = bench ? Array.prototype.slice.call(bench.querySelectorAll(".build-steps li")) : [];
     var puff = bench && bench.querySelector(".puff");
     var stage = -1;
@@ -322,9 +327,13 @@
 
     function build(i) {
       if (i === stage) return;
+      var prev = stage;
       var forward = i > stage;
       stage = i;
-      frames.forEach(function (f, k) { f.classList.toggle("on", k === i); });
+      frames.forEach(function (f, k) {
+        f.classList.toggle("on", k === i);
+        f.classList.toggle("hold", prev >= 0 && k === prev);
+      });
       steps.forEach(function (s, k) { s.classList.toggle("on", k === i); });
       var stand = bench.querySelector(".bench");
       if (stand) stand.style.setProperty("--stage", String(i));
