@@ -416,10 +416,30 @@
         var body = pin && pin.firstElementChild;
         if (!body || !root.classList.contains("scenes")) {
           scene.style.removeProperty("--slack");
+          if (body) {
+            body.style.transform = "";
+            body.style.marginTop = "";
+            body.style.marginBottom = "";
+          }
           return;
         }
-        var spare = Math.max(0, (pin.clientHeight - body.offsetHeight) / 2);
-        scene.style.setProperty("--slack", spare.toFixed(1) + "px");
+        body.style.transform = "";
+        body.style.marginTop = "";
+        body.style.marginBottom = "";
+        var room = pin.clientHeight;
+        var need = body.offsetHeight;
+        var gap = 16;
+        if (need > room - gap) {
+          var z = (room - gap) / need;
+          var pull = (need * (1 - z)) / 2;
+          body.style.transformOrigin = "center center";
+          body.style.transform = "scale(" + z.toFixed(4) + ")";
+          body.style.marginTop = (-pull).toFixed(1) + "px";
+          body.style.marginBottom = (-pull).toFixed(1) + "px";
+          scene.style.setProperty("--slack", "0px");
+        } else {
+          scene.style.setProperty("--slack", ((room - need) / 2).toFixed(1) + "px");
+        }
       });
     }
 
@@ -499,6 +519,7 @@
     window.addEventListener("scroll", function () { syncSpin(); schedule(); }, { passive: true });
     window.addEventListener("resize", function () { slack(); schedule(); });
     window.addEventListener("load", slack);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(slack);
     if (reduce.addEventListener) {
       reduce.addEventListener("change", mode);
       roomy.addEventListener("change", mode);

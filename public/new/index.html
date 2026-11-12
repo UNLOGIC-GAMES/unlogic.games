@@ -790,7 +790,7 @@
       padding: 0.32rem 0.75rem 0.32rem 1.5rem; border-radius: 2rem;
       background: rgba(9, 12, 14, .62);
       -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-      font: var(--emphasis-weight) 0.72rem/1.2 system-ui, "Segoe UI", sans-serif;
+      font: var(--emphasis-weight) 0.875rem/1.2 system-ui, "Segoe UI", sans-serif;
       letter-spacing: 0.14em; text-transform: uppercase; color: var(--art-cream);
     }
     .screen-badge::before {
@@ -805,6 +805,11 @@
     }
     @media (prefers-reduced-motion: reduce) {
       .sign, .screen-badge::before, .shift-title .w.jolt, .shift-title .w.nudge, .shift-title .w.knock { animation: none; }
+    }
+    @media (min-width: 52rem) and (max-height: 50rem) {
+      .home { --drop: clamp(2.2rem, 6vh, 4rem); padding-bottom: 1.4rem; }
+      .sign { --sign-w: min(22rem, 40vw); }
+      .home-grid { margin-top: 0.7rem; }
     }
     @media (min-width: 52rem) and (max-height: 46rem) {
       .home { --drop: 3.2rem; }
@@ -1049,7 +1054,7 @@
     .side + .side { border-left: 0.1rem dashed rgba(27, 33, 36, .28); padding-left: 2rem; }
     .side-label {
       margin: 0 0 0.3rem;
-      font: var(--emphasis-weight) 0.78rem/1.2 system-ui, "Segoe UI", sans-serif;
+      font: var(--emphasis-weight) 0.875rem/1.2 system-ui, "Segoe UI", sans-serif;
       letter-spacing: 0.14em; text-transform: uppercase;
       color: #7a6a58;
     }
@@ -1145,7 +1150,7 @@
     html { scrollbar-color: #5a4a34 var(--ink); }
     .gz-kicker, .gz-ed {
       margin: 0; text-align: center;
-      font: var(--emphasis-weight) 0.7rem/1.3 system-ui, "Segoe UI", sans-serif;
+      font: var(--emphasis-weight) 0.875rem/1.3 system-ui, "Segoe UI", sans-serif;
       letter-spacing: 0.16em; text-transform: uppercase; color: #5d5347;
     }
     .gz-mast {
@@ -1183,7 +1188,7 @@
     .close-logo { display: block; width: min(22rem, 70%); height: auto; margin: 0 auto 1rem; }
     .close-label {
       margin: 0;
-      font: var(--emphasis-weight) 0.82rem/1.2 system-ui, "Segoe UI", sans-serif;
+      font: var(--emphasis-weight) 0.875rem/1.2 system-ui, "Segoe UI", sans-serif;
       letter-spacing: 0.2em; text-transform: uppercase; color: #ffd56a;
     }
     .close-copy {
@@ -1451,7 +1456,29 @@
 
     @media (max-width: 52rem) {
       .side + .side { border-left: 0; border-top: 0.06rem solid rgba(255, 232, 186, .16); }
-      .section-head { font-size: clamp(2rem, 8.4vw, 2.6rem); }
+      .section-head, .card.welcome h2 { font-size: clamp(2rem, 8.4vw, 2.6rem); }
+    }
+
+    /* Wide but short: a landscape phone is past the desktop width and under
+       the pinned-scene height. Keep the header and the bench inside one screen. */
+    @media (min-width: 52rem) and (max-height: 40rem) {
+      html:not(.scenes) .home { min-height: 0; --drop: 1.1rem; padding-bottom: 0.8rem; }
+      html:not(.scenes) .sign { --sign-w: min(15rem, 34vw); }
+      html:not(.scenes) .home-grid { margin-top: 0.3rem; gap: 0.8rem 1.2rem; align-items: center; }
+      html:not(.scenes) .shift-title .l1,
+      html:not(.scenes) .shift-title .l3 { font-size: 1.45rem; }
+      html:not(.scenes) .shift-title .l2 { font-size: 2.7rem; }
+      html:not(.scenes) .home .lead-copy { margin-top: 0.4rem; font-size: 0.95rem; }
+      html:not(.scenes) .screen { max-width: 100%; }
+      html:not(.scenes) .screen-glass { width: auto; max-width: 100%; height: 38svh; }
+      html:not(.scenes) .bench-scene { padding-top: 0.8rem; }
+      html:not(.scenes) .bench-grid { grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr); align-items: center; }
+      html:not(.scenes) .bench { width: auto; height: 58svh; max-height: 58svh; justify-self: end; }
+      html:not(.scenes) .bench-copy .dark-head { font-size: 1.4rem; }
+      html:not(.scenes) .bench-copy .dark-deck { font-size: 0.9rem; }
+      html:not(.scenes) .build-steps { margin-top: 0.35rem; }
+      html:not(.scenes) .build-steps li { grid-template-columns: 6.6rem 1fr; gap: 0.45rem; padding: 0.16rem 0; font-size: 0.9rem; line-height: 1.3; }
+      html:not(.scenes) .build-steps b { font-size: 0.95rem; white-space: normal; }
     }
 
     @media print {
@@ -1729,7 +1756,7 @@
 
   </div>
 
-  <script src="assets/js/scenes.js?v=18"></script>
+  <script src="assets/js/scenes.js?v=19"></script>
   <script src="assets/js/page.js?v=25"></script>
 </body>
 </html>
