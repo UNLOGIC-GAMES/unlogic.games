@@ -893,9 +893,13 @@
     }
     .build-steps li.on { color: var(--paper); }
     .build-steps li.on b { color: #ffd56a; }
+    .build-steps .step-art { display: none; }
+    /* Géraud's four bench paintings stacked in one frame. The live one
+       develops out of a blur under the lamp; the one it replaces sinks back. */
     .bench {
+      --stage: 0;
       position: relative;
-      aspect-ratio: 700 / 760;
+      aspect-ratio: 1;
       max-height: 78vh;
       margin-inline: auto;
       width: 100%;
@@ -903,23 +907,30 @@
     .lamp {
       position: absolute; inset: -12% -18% 0;
       background: radial-gradient(48% 44% at 50% 46%, rgba(255, 196, 110, .30), rgba(255, 174, 66, .08) 55%, transparent 72%);
+      opacity: calc(0.7 + var(--stage) * 0.1);
+      transition: opacity .8s ease;
       pointer-events: none;
     }
     .bench-shadow {
-      position: absolute; left: 12%; right: 12%; bottom: 2%; height: 9%;
+      position: absolute; left: 14%; right: 14%; bottom: 6%; height: 9%;
       background: radial-gradient(closest-side, rgba(0, 0, 0, .55), transparent);
     }
     .bot-frame {
-      position: absolute; left: 50%; bottom: 4%;
-      width: var(--w); height: auto;
-      translate: -50% -5%;
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
       opacity: 0;
-      filter: drop-shadow(0 1.2rem 1.4rem rgba(0, 0, 0, .45));
-      transition: opacity .16s ease, translate .45s cubic-bezier(.3, 1.3, .5, 1);
+      transform: translateY(3%) scale(.9) rotate(-3deg);
+      filter: blur(0.7rem) brightness(1.6) drop-shadow(0 1.2rem 1.4rem rgba(0, 0, 0, .45));
+      transition: opacity .45s ease, transform .5s ease, filter .45s ease;
     }
-    .bot-frame.on { opacity: 1; translate: -50% 0; }
+    .bot-frame.on {
+      opacity: 1;
+      transform: none;
+      filter: blur(0) brightness(1) drop-shadow(0 1.2rem 1.4rem rgba(0, 0, 0, .45));
+      transition: opacity .55s ease .12s, transform .8s cubic-bezier(.2, 1.35, .4, 1) .12s, filter .7s ease .12s;
+    }
     .puff {
-      position: absolute; left: 22%; bottom: 8%; width: 56%;
+      position: absolute; left: 22%; bottom: 18%; width: 56%;
       opacity: 0; pointer-events: none;
     }
     .puff.go { animation: puff 1.1s cubic-bezier(.16, 1, .3, 1); }
@@ -928,13 +939,30 @@
       100% { opacity: 0; transform: translateY(-28%) scale(1.25); }
     }
     @media (prefers-reduced-motion: reduce) {
-      .bot-frame { transition: opacity .2s ease; translate: -50% 0; }
+      .bot-frame, .bot-frame.on { transform: none; filter: drop-shadow(0 1.2rem 1.4rem rgba(0, 0, 0, .45)); transition: opacity .2s ease; }
       .puff.go { animation: none; }
     }
+    /* Phones get no shared bench: each step carries its own painting, and
+       lights up as it crosses the middle of the screen. */
     @media (max-width: 52rem) {
       .bench-grid { grid-template-columns: 1fr; }
-      .bench { max-width: 26rem; }
-      .build-steps li { grid-template-columns: 1fr; gap: 0.3rem; }
+      .bench-grid > .bench { display: none; }
+      .build-steps li { grid-template-columns: 1fr; gap: 0.3rem; padding: 1.6rem 0 1.4rem; }
+      .build-steps .step-art {
+        display: block; width: min(19rem, 82%); height: auto;
+        margin: 0 auto 0.6rem;
+        opacity: .35;
+        transform: scale(.88) rotate(-2deg);
+        filter: grayscale(.7) blur(0.15rem) drop-shadow(0 1rem 1.2rem rgba(0, 0, 0, .45));
+        transition: opacity .6s ease, transform .8s cubic-bezier(.2, 1.35, .4, 1), filter .6s ease;
+      }
+      .build-steps li.on .step-art {
+        opacity: 1; transform: none;
+        filter: grayscale(0) blur(0) drop-shadow(0 1rem 1.2rem rgba(0, 0, 0, .45));
+      }
+    }
+    @media (max-width: 52rem) and (prefers-reduced-motion: reduce) {
+      .build-steps .step-art, .build-steps li.on .step-art { transform: none; transition: opacity .2s ease; }
     }
 
     /* Scroll scenes, only where there is room and motion is welcome.
@@ -1414,7 +1442,7 @@
 
   </style>
 </head>
-<body data-content="content-v2.yaml?v=10">
+<body data-content="content-v2.yaml?v=11">
   <div id="gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
     <form id="gate-form">
       <p id="gate-title">SteamDreams</p>
@@ -1518,10 +1546,10 @@
             <div class="bench" aria-hidden="true">
               <div class="lamp"></div>
               <div class="bench-shadow"></div>
-              <img class="bot-frame" src="assets/images/bot/bot-2-shut.png" alt="" style="--w:88.6%">
-              <img class="bot-frame" src="assets/images/bot/bot-3-head.png" alt="" style="--w:83.4%">
-              <img class="bot-frame" src="assets/images/bot/bot-4-bellows.png" alt="" style="--w:83.4%">
-              <img class="bot-frame" src="assets/images/bot/bot-1-core.png" alt="" style="--w:89.9%">
+              <img class="bot-frame" src="assets/images/bench/step-1.webp" alt="" width="1024" height="1024">
+              <img class="bot-frame" src="assets/images/bench/step-2.webp" alt="" width="1024" height="1024">
+              <img class="bot-frame" src="assets/images/bench/step-3.webp" alt="" width="1024" height="1024">
+              <img class="bot-frame" src="assets/images/bench/step-4.webp" alt="" width="1024" height="1024">
               <img class="puff" src="assets/images/steam-plume-a.png" alt="">
             </div>
             <div class="bench-copy">
@@ -1650,7 +1678,7 @@
 
   </div>
 
-  <script src="assets/js/scenes.js?v=15"></script>
-  <script src="assets/js/page.js?v=24"></script>
+  <script src="assets/js/scenes.js?v=16"></script>
+  <script src="assets/js/page.js?v=25"></script>
 </body>
 </html>

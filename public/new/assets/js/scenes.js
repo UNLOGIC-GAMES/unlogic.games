@@ -325,6 +325,8 @@
       stage = i;
       frames.forEach(function (f, k) { f.classList.toggle("on", k === i); });
       steps.forEach(function (s, k) { s.classList.toggle("on", k === i); });
+      var stand = bench.querySelector(".bench");
+      if (stand) stand.style.setProperty("--stage", String(i));
       if (puff && forward && i > 0) {
         puff.classList.remove("go");
         void puff.offsetWidth;
@@ -355,8 +357,8 @@
           var bp = sceneProgress(bench);
           bench.style.setProperty("--p", bp.toFixed(4));
           build(Math.min(frames.length - 1, Math.floor((bp / 0.85) * frames.length)));
-        } else if (!loop) {
-          build(frames.length - 1);
+        } else if (stage < 0) {
+          build(0);
         }
       }
 
@@ -426,17 +428,16 @@
       });
     }
 
-    /* Narrow screens get no pinned scroll, so the bench plays itself as a
-       slow flipbook while it is on screen, and stops when it leaves. */
-    if (bench && frames.length && "IntersectionObserver" in window) {
-      new IntersectionObserver(function (entries) {
-        clearInterval(loop);
-        loop = 0;
-        if (entries[0].isIntersecting && !root.classList.contains("scenes") && !reduce.matches) {
-          build(0);
-          loop = setInterval(function () { build((stage + 1) % frames.length); }, 1700);
-        }
-      }, { threshold: 0.4 }).observe(bench.querySelector(".bench"));
+    /* Without the pinned scroll, the step crossing the middle of the screen
+       is the live one. On phones that lights the painting inside the step. */
+    if (bench && steps.length && "IntersectionObserver" in window) {
+      var stepIo = new IntersectionObserver(function (entries) {
+        if (root.classList.contains("scenes")) return;
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) build(steps.indexOf(entry.target));
+        });
+      }, { rootMargin: "-42% 0px -42% 0px" });
+      steps.forEach(function (s) { stepIo.observe(s); });
     }
 
     window.addEventListener("scroll", function () { syncSpin(); schedule(); }, { passive: true });

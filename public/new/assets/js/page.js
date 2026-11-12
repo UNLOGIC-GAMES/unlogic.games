@@ -322,7 +322,10 @@
       var value = get(data, node.getAttribute("data-steps"));
       if (value) {
         node.innerHTML = value.map(function (step) {
-          return "<li><b>" + escapeHtml(step.name, false) + "</b><span>" + mark(step.text) + "</span></li>";
+          var art = step.image
+            ? "<img class=\"step-art\" src=\"" + escapeHtml("assets/images/" + step.image, true) + "\" alt=\"\" width=\"1024\" height=\"1024\" loading=\"lazy\">"
+            : "";
+          return "<li>" + art + "<b>" + escapeHtml(step.name, false) + "</b><span>" + mark(step.text) + "</span></li>";
         }).join("");
       }
     });
