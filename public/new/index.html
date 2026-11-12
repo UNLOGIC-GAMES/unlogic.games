@@ -1287,15 +1287,21 @@
       text-decoration: underline; text-decoration-thickness: 0.08em; text-underline-offset: 0.18em;
     }
     /* Only the blank paper drops out. The drawing keeps the colours Géraud painted. */
+    .welcome-rail {
+      position: relative;
+      max-width: 68rem;
+      height: 4.4rem;
+      margin: clamp(4rem, 9vw, 7.5rem) auto 0;
+    }
+    .welcome-rail .hanger { left: 0; right: 0; top: auto; bottom: 0; }
     .welcome-scene {
       position: relative;
-      margin: clamp(4rem, 9vw, 7.5rem) auto 0; max-width: 68rem;
+      margin: clamp(0.4rem, 1.2vw, 0.9rem) auto 0; max-width: 68rem;
     }
     .welcome-scene img {
       display: block; width: 100%; height: auto;
     }
-    .welcome-scene + .cluster,
-    .welcome-scene + .cluster:has(.hanger) { padding-top: clamp(2.8rem, 6vw, 4.6rem); }
+    .welcome-scene + .cluster { padding-top: clamp(1.2rem, 3vw, 2.2rem); }
     .paths .ln path { stroke: rgba(255, 232, 186, .34); }
     .paths .ln .stub { stroke: var(--teal); }
     .paths .node { fill: var(--amber); }
@@ -1488,15 +1494,18 @@
       <img class="vapor" src="assets/images/steam-corner-a.png" alt="" style="right:-7%;top:-4%;width:min(16rem,42vw);opacity:.13;transform:scale(-1,-1);">
       <div class="glow" style="background:radial-gradient(72% 30% at 34% 32%, rgba(45,205,196,.24), rgba(45,205,196,0) 72%);"></div>
 
+      <div class="rail welcome-rail" aria-hidden="true">
+        <div class="hanger">
+          <span class="rod"><img src="assets/images/ui/rod-vial.png" alt=""><img class="rod-on" src="assets/images/ui/rod-lit.png" alt=""></span>
+        </div>
+      </div>
+
       <figure class="rail welcome-scene">
         <img src="assets/images/look/welcome-workshop-ink.webp" alt="" data-alt="workshop.scene_alt" width="2800" height="1535" loading="lazy">
       </figure>
 
       <div class="rail cluster">
         <div class="card welcome">
-          <div class="hanger" aria-hidden="true">
-            <span class="rod"><img src="assets/images/ui/rod-vial.png" alt=""><img class="rod-on" src="assets/images/ui/rod-lit.png" alt=""></span>
-          </div>
           <h2 data-text="welcome.heading"></h2>
           <div data-copy="welcome.copy"></div>
           <img class="seal" src="assets/images/ui/stamp.png" alt="">
