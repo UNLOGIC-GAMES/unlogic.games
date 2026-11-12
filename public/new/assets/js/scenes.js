@@ -409,8 +409,23 @@
       }
     }
 
+    function slack() {
+      [bench, choose].forEach(function (scene) {
+        if (!scene) return;
+        var pin = scene.querySelector(".pin");
+        var body = pin && pin.firstElementChild;
+        if (!body || !root.classList.contains("scenes")) {
+          scene.style.removeProperty("--slack");
+          return;
+        }
+        var spare = Math.max(0, (pin.clientHeight - body.offsetHeight) / 2);
+        scene.style.setProperty("--slack", spare.toFixed(1) + "px");
+      });
+    }
+
     function mode() {
       root.classList.toggle("scenes", roomy.matches && !reduce.matches);
+      slack();
       if (root.classList.contains("scenes")) {
         clearInterval(loop);
         loop = 0;
@@ -482,7 +497,8 @@
     }
 
     window.addEventListener("scroll", function () { syncSpin(); schedule(); }, { passive: true });
-    window.addEventListener("resize", schedule);
+    window.addEventListener("resize", function () { slack(); schedule(); });
+    window.addEventListener("load", slack);
     if (reduce.addEventListener) {
       reduce.addEventListener("change", mode);
       roomy.addEventListener("change", mode);

@@ -39,6 +39,7 @@
       --rail: min(76rem, calc(100% - 1.6rem));
       --block-gap: 2.8rem;
       --plate-hang: 2.8rem;
+      --section-gap: clamp(5rem, 11vw, 9.5rem);
       --card-pad-y: clamp(1.6rem, 3vw, 2.4rem);
       --card-pad-x: clamp(1.2rem, 2.6vw, 2rem);
       --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
@@ -867,15 +868,16 @@
       text-align: center; font-style: italic;
       color: rgba(255, 232, 186, .78);
     }
-    .bench-scene, .made { padding-top: var(--block-gap); }
+    .made { padding-top: var(--block-gap); }
     .section-head { max-width: 46rem; margin: 0 auto clamp(1.4rem, 3vw, 2.2rem); }
 
     /* The workbench: four painted stages of one steambot stacked in register
        under a lamp. Only the stage marked .on shows; scenes.js picks it. */
     .bench-grid {
-      display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
       gap: 2rem clamp(2rem, 5vw, 5rem); align-items: center;
     }
+    .bench-grid > .bench-copy { order: -1; }
     .bench-copy .dark-head, .bench-copy .dark-deck { text-align: left; margin-inline: 0; }
     .build-steps { list-style: none; margin: 2rem 0 0; padding: 0; }
     .build-steps li {
@@ -946,11 +948,13 @@
        four steps as tabs, and only the live step's text in a fixed slot.
        scenes.js advances it while it is in view; a tap picks a step. */
     @media (max-width: 52rem) {
-      .bench-grid { grid-template-columns: 1fr; gap: 0.4rem; }
-      .bench-grid > .bench { width: min(84vw, 40svh, 24rem); max-height: none; }
-      .bench-copy .dark-head { font-size: clamp(1.7rem, 7.4vw, 2.2rem); margin-bottom: 0.5rem; }
-      .bench-copy .dark-deck { font-size: 0.95rem; line-height: 1.45; margin-bottom: 0; }
+      .bench-grid { grid-template-columns: 1fr; gap: 0; }
+      .bench-grid > .bench-copy { display: contents; }
+      .bench-copy .dark-head { order: 1; font-size: clamp(1.7rem, 7.4vw, 2.2rem); margin-bottom: 0.5rem; }
+      .bench-copy .dark-deck { order: 2; font-size: 0.95rem; line-height: 1.45; margin-bottom: 0; }
+      .bench-grid > .bench { order: 3; width: min(84vw, 38svh, 24rem); max-height: none; margin-top: 0.6rem; }
       .build-steps {
+        order: 4;
         display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
         column-gap: 0.4rem; margin-top: 1.1rem;
       }
@@ -1319,8 +1323,19 @@
     .card a:hover { color: var(--amber); }
     .card .aside { color: rgba(246, 241, 228, .6); }
     .seal { display: none; }
-    .cluster, .choose-scene, .made { padding-top: clamp(5rem, 11vw, 9.5rem); }
-    .cluster:has(.hanger) { padding-top: calc(clamp(5rem, 11vw, 9.5rem) + 2.6rem); }
+    .cluster, .choose-scene, .made, .bench-scene { padding-top: var(--section-gap); }
+    .cluster:has(.hanger) { padding-top: calc(var(--section-gap) + 2.6rem); }
+    .reel + .cluster { padding-top: calc(var(--section-gap) - 1.6rem); }
+    /* The bands fade in and out over a fifth of their height, so they
+       need less margin than a section to read as evenly spaced. */
+    .cluster + .band { margin-top: calc(var(--section-gap) * 0.4); }
+    .page:has(> .band:last-child) + .page > .cluster:first-of-type { padding-top: calc(var(--section-gap) * 0.4); }
+    /* Pinned scenes centre their content in the viewport; scenes.js
+       writes the leftover so the gap around them matches a section. */
+    .scenes .bench-scene, .scenes .choose-scene {
+      margin-top: calc(var(--section-gap) - var(--slack, 0px));
+      margin-bottom: calc(var(--slack, 0px) * -1);
+    }
     .section-head {
       max-width: 52rem;
       font-size: clamp(2.3rem, 5vw, 3.9rem); line-height: 1.02;
@@ -1335,7 +1350,7 @@
     .side.never h3 { color: rgba(246, 241, 228, .55); }
     .side h3 .verb { font-style: italic; color: var(--teal); }
     .side.never h3 .verb {
-      color: #ff7a5c; text-transform: uppercase; letter-spacing: 0.04em;
+      color: #ff7a5c;
       text-decoration: underline; text-decoration-thickness: 0.08em; text-underline-offset: 0.18em;
     }
     /* Only the blank paper drops out. The drawing keeps the colours Géraud painted. */
@@ -1343,7 +1358,7 @@
       position: relative;
       max-width: 68rem;
       height: 4.4rem;
-      margin: clamp(4rem, 9vw, 7.5rem) auto 0;
+      margin: 0 auto;
     }
     .welcome-rail .hanger { left: 0; right: 0; top: auto; bottom: 0; }
     .welcome-scene {
@@ -1702,7 +1717,7 @@
 
   </div>
 
-  <script src="assets/js/scenes.js?v=17"></script>
+  <script src="assets/js/scenes.js?v=18"></script>
   <script src="assets/js/page.js?v=25"></script>
 </body>
 </html>
