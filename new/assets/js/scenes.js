@@ -3,6 +3,7 @@
   var root = document.documentElement;
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
   var roomy = window.matchMedia("(min-width: 52rem) and (min-height: 40rem)");
+  var phone = window.matchMedia("(max-width: 52rem)");
 
   function clamp(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
   function seeded(seed) {
@@ -325,6 +326,8 @@
       stage = i;
       frames.forEach(function (f, k) { f.classList.toggle("on", k === i); });
       steps.forEach(function (s, k) { s.classList.toggle("on", k === i); });
+      var stand = bench.querySelector(".bench");
+      if (stand) stand.style.setProperty("--stage", String(i));
       if (puff && forward && i > 0) {
         puff.classList.remove("go");
         void puff.offsetWidth;
@@ -355,8 +358,8 @@
           var bp = sceneProgress(bench);
           bench.style.setProperty("--p", bp.toFixed(4));
           build(Math.min(frames.length - 1, Math.floor((bp / 0.85) * frames.length)));
-        } else if (!loop) {
-          build(frames.length - 1);
+        } else if (stage < 0) {
+          build(0);
         }
       }
 
@@ -413,6 +416,7 @@
         loop = 0;
       }
       syncSpin();
+      autoplay();
       paint();
     }
 
@@ -426,17 +430,55 @@
       });
     }
 
-    /* Narrow screens get no pinned scroll, so the bench plays itself as a
-       slow flipbook while it is on screen, and stops when it leaves. */
-    if (bench && frames.length && "IntersectionObserver" in window) {
+    /* Without the pinned scroll, the step crossing the middle of the screen
+       is the live one. On phones that lights the painting inside the step. */
+    if (bench && steps.length && "IntersectionObserver" in window) {
+      var stepIo = new IntersectionObserver(function (entries) {
+        if (root.classList.contains("scenes") || phone.matches) return;
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) build(steps.indexOf(entry.target));
+        });
+      }, { rootMargin: "-42% 0px -42% 0px" });
+      steps.forEach(function (s) { stepIo.observe(s); });
+    }
+
+    /* Phones show the bench on one screen and turn the steps over by
+       themselves while it is in view. A tap jumps to a step. */
+    var list = bench && bench.querySelector(".build-steps");
+    var STEP_MS = 3600;
+    var benchSeen = false;
+    var turn = 0;
+    function autoplay() {
+      clearInterval(turn);
+      turn = 0;
+      var on = list && phone.matches && benchSeen && !reduce.matches;
+      if (list) list.classList.toggle("auto", !!on);
+      if (!on) return;
+      list.style.setProperty("--step-time", STEP_MS + "ms");
+      turn = setInterval(function () {
+        if (!document.hidden) build((stage + 1) % steps.length);
+      }, STEP_MS);
+    }
+    steps.forEach(function (s, k) {
+      var tab = s.querySelector("b");
+      if (!tab) return;
+      tab.setAttribute("tabindex", "0");
+      tab.setAttribute("role", "button");
+      function pick() {
+        if (root.classList.contains("scenes")) return;
+        build(k);
+        autoplay();
+      }
+      tab.addEventListener("click", pick);
+      tab.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); }
+      });
+    });
+    if (list && "IntersectionObserver" in window) {
       new IntersectionObserver(function (entries) {
-        clearInterval(loop);
-        loop = 0;
-        if (entries[0].isIntersecting && !root.classList.contains("scenes") && !reduce.matches) {
-          build(0);
-          loop = setInterval(function () { build((stage + 1) % frames.length); }, 1700);
-        }
-      }, { threshold: 0.4 }).observe(bench.querySelector(".bench"));
+        benchSeen = entries[0].isIntersecting;
+        autoplay();
+      }, { threshold: 0.6 }).observe(bench.querySelector(".bench-grid") || bench);
     }
 
     window.addEventListener("scroll", function () { syncSpin(); schedule(); }, { passive: true });
@@ -444,6 +486,7 @@
     if (reduce.addEventListener) {
       reduce.addEventListener("change", mode);
       roomy.addEventListener("change", mode);
+      phone.addEventListener("change", mode);
     }
     mode();
   }

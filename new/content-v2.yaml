@@ -39,12 +39,16 @@ bench:
   steps:
     - name: The order
       text: Someone knocks with a broken steambot. Take the job, or send them away.
+      image: bench/step-1.webp
     - name: The build
       text: Do what they asked, or what you think they need. They'll remember which.
+      image: bench/step-2.webp
     - name: The deadline
       text: Rush it tonight or do it right tomorrow. The queue at the door is watching.
+      image: bench/step-3.webp
     - name: The delivery
       text: Hand it over and see what comes back. By morning, the city knows how you work.
+      image: bench/step-4.webp
 
 choose:
   heading: What happens when you choose?

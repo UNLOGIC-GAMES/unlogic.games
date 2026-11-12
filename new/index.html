@@ -873,7 +873,7 @@
     /* The workbench: four painted stages of one steambot stacked in register
        under a lamp. Only the stage marked .on shows; scenes.js picks it. */
     .bench-grid {
-      display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
       gap: 2rem clamp(2rem, 5vw, 5rem); align-items: center;
     }
     .bench-copy .dark-head, .bench-copy .dark-deck { text-align: left; margin-inline: 0; }
@@ -893,9 +893,13 @@
     }
     .build-steps li.on { color: var(--paper); }
     .build-steps li.on b { color: #ffd56a; }
+    .build-steps .step-art { display: none; }
+    /* Géraud's four bench paintings stacked in one frame. The live one
+       develops out of a blur under the lamp; the one it replaces sinks back. */
     .bench {
+      --stage: 0;
       position: relative;
-      aspect-ratio: 700 / 760;
+      aspect-ratio: 1;
       max-height: 78vh;
       margin-inline: auto;
       width: 100%;
@@ -903,23 +907,30 @@
     .lamp {
       position: absolute; inset: -12% -18% 0;
       background: radial-gradient(48% 44% at 50% 46%, rgba(255, 196, 110, .30), rgba(255, 174, 66, .08) 55%, transparent 72%);
+      opacity: calc(0.7 + var(--stage) * 0.1);
+      transition: opacity .8s ease;
       pointer-events: none;
     }
     .bench-shadow {
-      position: absolute; left: 12%; right: 12%; bottom: 2%; height: 9%;
+      position: absolute; left: 14%; right: 14%; bottom: 6%; height: 9%;
       background: radial-gradient(closest-side, rgba(0, 0, 0, .55), transparent);
     }
     .bot-frame {
-      position: absolute; left: 50%; bottom: 4%;
-      width: var(--w); height: auto;
-      translate: -50% -5%;
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
       opacity: 0;
-      filter: drop-shadow(0 1.2rem 1.4rem rgba(0, 0, 0, .45));
-      transition: opacity .16s ease, translate .45s cubic-bezier(.3, 1.3, .5, 1);
+      transform: translateY(3%) scale(.9) rotate(-3deg);
+      filter: blur(0.7rem) brightness(1.6) drop-shadow(0 1.2rem 1.4rem rgba(0, 0, 0, .45));
+      transition: opacity .45s ease, transform .5s ease, filter .45s ease;
     }
-    .bot-frame.on { opacity: 1; translate: -50% 0; }
+    .bot-frame.on {
+      opacity: 1;
+      transform: none;
+      filter: blur(0) brightness(1) drop-shadow(0 1.2rem 1.4rem rgba(0, 0, 0, .45));
+      transition: opacity .55s ease .12s, transform .8s cubic-bezier(.2, 1.35, .4, 1) .12s, filter .7s ease .12s;
+    }
     .puff {
-      position: absolute; left: 22%; bottom: 8%; width: 56%;
+      position: absolute; left: 22%; bottom: 18%; width: 56%;
       opacity: 0; pointer-events: none;
     }
     .puff.go { animation: puff 1.1s cubic-bezier(.16, 1, .3, 1); }
@@ -928,13 +939,54 @@
       100% { opacity: 0; transform: translateY(-28%) scale(1.25); }
     }
     @media (prefers-reduced-motion: reduce) {
-      .bot-frame { transition: opacity .2s ease; translate: -50% 0; }
+      .bot-frame, .bot-frame.on { transform: none; filter: drop-shadow(0 1.2rem 1.4rem rgba(0, 0, 0, .45)); transition: opacity .2s ease; }
       .puff.go { animation: none; }
     }
+    /* Phones keep the whole bench on one screen: the painting on top, the
+       four steps as tabs, and only the live step's text in a fixed slot.
+       scenes.js advances it while it is in view; a tap picks a step. */
     @media (max-width: 52rem) {
-      .bench-grid { grid-template-columns: 1fr; }
-      .bench { max-width: 26rem; }
-      .build-steps li { grid-template-columns: 1fr; gap: 0.3rem; }
+      .bench-grid { grid-template-columns: 1fr; gap: 0.4rem; }
+      .bench-grid > .bench { width: min(84vw, 40svh, 24rem); max-height: none; }
+      .bench-copy .dark-head { font-size: clamp(1.7rem, 7.4vw, 2.2rem); margin-bottom: 0.5rem; }
+      .bench-copy .dark-deck { font-size: 0.95rem; line-height: 1.45; margin-bottom: 0; }
+      .build-steps {
+        display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+        column-gap: 0.4rem; margin-top: 1.1rem;
+      }
+      .build-steps li { display: contents; }
+      .build-steps b {
+        grid-row: 1; position: relative;
+        padding: 0.7rem 0.1rem 0.55rem;
+        border-top: 0.12rem solid rgba(255, 232, 186, .18);
+        font-size: 0.98rem; line-height: 1.15; text-align: center;
+        white-space: normal; cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .build-steps b::before {
+        content: ""; position: absolute; left: 0; right: 0; top: -0.12rem; height: 0.12rem;
+        background: #ffd56a; transform: scaleX(0); transform-origin: left;
+      }
+      .build-steps li.on b::before { transform: scaleX(1); transition: transform .35s ease; }
+      .build-steps.auto li.on b::before { animation: step-fill var(--step-time, 3.6s) linear; }
+      .build-steps b:focus-visible { outline: 0.12rem solid #ffd56a; outline-offset: 0.15rem; }
+      .build-steps span {
+        grid-row: 2; grid-column: 1 / -1;
+        min-height: 4.4em; padding-top: 0.5rem;
+        font-size: 0.95rem; line-height: 1.45;
+        opacity: 0; transform: translateY(0.4rem);
+        transition: opacity .3s ease, transform .3s ease;
+        pointer-events: none;
+      }
+      .build-steps li.on span {
+        opacity: 1; transform: none;
+        transition: opacity .45s ease .1s, transform .45s ease .1s;
+      }
+    }
+    @keyframes step-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    @media (max-width: 52rem) and (prefers-reduced-motion: reduce) {
+      .build-steps span, .build-steps li.on span { transform: none; transition: opacity .2s ease; }
+      .build-steps.auto li.on b::before { animation: none; }
     }
 
     /* Scroll scenes, only where there is room and motion is welcome.
@@ -1287,13 +1339,21 @@
       text-decoration: underline; text-decoration-thickness: 0.08em; text-underline-offset: 0.18em;
     }
     /* Only the blank paper drops out. The drawing keeps the colours Géraud painted. */
+    .welcome-rail {
+      position: relative;
+      max-width: 68rem;
+      height: 4.4rem;
+      margin: clamp(4rem, 9vw, 7.5rem) auto 0;
+    }
+    .welcome-rail .hanger { left: 0; right: 0; top: auto; bottom: 0; }
     .welcome-scene {
       position: relative;
-      margin: clamp(1.5rem, 4vw, 3rem) auto 0; max-width: 68rem;
+      margin: clamp(0.4rem, 1.2vw, 0.9rem) auto 0; max-width: 68rem;
     }
     .welcome-scene img {
       display: block; width: 100%; height: auto;
     }
+    .welcome-scene + .cluster { padding-top: clamp(1.2rem, 3vw, 2.2rem); }
     .paths .ln path { stroke: rgba(255, 232, 186, .34); }
     .paths .ln .stub { stroke: var(--teal); }
     .paths .node { fill: var(--amber); }
@@ -1406,7 +1466,7 @@
 
   </style>
 </head>
-<body data-content="content-v2.yaml?v=10">
+<body data-content="content-v2.yaml?v=11">
   <div id="gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
     <form id="gate-form">
       <p id="gate-title">SteamDreams</p>
@@ -1486,14 +1546,9 @@
       <img class="vapor" src="assets/images/steam-corner-a.png" alt="" style="right:-7%;top:-4%;width:min(16rem,42vw);opacity:.13;transform:scale(-1,-1);">
       <div class="glow" style="background:radial-gradient(72% 30% at 34% 32%, rgba(45,205,196,.24), rgba(45,205,196,0) 72%);"></div>
 
-      <div class="rail cluster">
-        <div class="card welcome">
-          <div class="hanger" aria-hidden="true">
-            <span class="rod"><img src="assets/images/ui/rod-vial.png" alt=""><img class="rod-on" src="assets/images/ui/rod-lit.png" alt=""></span>
-          </div>
-          <h2 data-text="welcome.heading"></h2>
-          <div data-copy="welcome.copy"></div>
-          <img class="seal" src="assets/images/ui/stamp.png" alt="">
+      <div class="rail welcome-rail" aria-hidden="true">
+        <div class="hanger">
+          <span class="rod"><img src="assets/images/ui/rod-vial.png" alt=""><img class="rod-on" src="assets/images/ui/rod-lit.png" alt=""></span>
         </div>
       </div>
 
@@ -1501,22 +1556,30 @@
         <img src="assets/images/look/welcome-workshop-ink.webp" alt="" data-alt="workshop.scene_alt" width="2800" height="1535" loading="lazy">
       </figure>
 
+      <div class="rail cluster">
+        <div class="card welcome">
+          <h2 data-text="welcome.heading"></h2>
+          <div data-copy="welcome.copy"></div>
+          <img class="seal" src="assets/images/ui/stamp.png" alt="">
+        </div>
+      </div>
+
       <section class="scene bench-scene" id="bench">
         <div class="pin">
           <div class="rail bench-grid">
+            <div class="bench" aria-hidden="true">
+              <div class="lamp"></div>
+              <div class="bench-shadow"></div>
+              <img class="bot-frame" src="assets/images/bench/step-1.webp" alt="" width="1024" height="1024">
+              <img class="bot-frame" src="assets/images/bench/step-2.webp" alt="" width="1024" height="1024">
+              <img class="bot-frame" src="assets/images/bench/step-3.webp" alt="" width="1024" height="1024">
+              <img class="bot-frame" src="assets/images/bench/step-4.webp" alt="" width="1024" height="1024">
+              <img class="puff" src="assets/images/steam-plume-a.png" alt="">
+            </div>
             <div class="bench-copy">
               <h2 class="dark-head" data-text="bench.heading"></h2>
               <p class="dark-deck" data-text="bench.deck"></p>
               <ol class="build-steps" data-steps="bench.steps"></ol>
-            </div>
-            <div class="bench" aria-hidden="true">
-              <div class="lamp"></div>
-              <div class="bench-shadow"></div>
-              <img class="bot-frame" src="assets/images/bot/bot-2-shut.png" alt="" style="--w:88.6%">
-              <img class="bot-frame" src="assets/images/bot/bot-3-head.png" alt="" style="--w:83.4%">
-              <img class="bot-frame" src="assets/images/bot/bot-4-bellows.png" alt="" style="--w:83.4%">
-              <img class="bot-frame" src="assets/images/bot/bot-1-core.png" alt="" style="--w:89.9%">
-              <img class="puff" src="assets/images/steam-plume-a.png" alt="">
             </div>
           </div>
         </div>
@@ -1639,7 +1702,7 @@
 
   </div>
 
-  <script src="assets/js/scenes.js?v=15"></script>
-  <script src="assets/js/page.js?v=24"></script>
+  <script src="assets/js/scenes.js?v=17"></script>
+  <script src="assets/js/page.js?v=25"></script>
 </body>
 </html>
