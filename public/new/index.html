@@ -873,7 +873,7 @@
     /* The workbench: four painted stages of one steambot stacked in register
        under a lamp. Only the stage marked .on shows; scenes.js picks it. */
     .bench-grid {
-      display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
       gap: 2rem clamp(2rem, 5vw, 5rem); align-items: center;
     }
     .bench-copy .dark-head, .bench-copy .dark-deck { text-align: left; margin-inline: 0; }
@@ -1289,11 +1289,13 @@
     /* Only the blank paper drops out. The drawing keeps the colours Géraud painted. */
     .welcome-scene {
       position: relative;
-      margin: clamp(1.5rem, 4vw, 3rem) auto 0; max-width: 68rem;
+      margin: clamp(4rem, 9vw, 7.5rem) auto 0; max-width: 68rem;
     }
     .welcome-scene img {
       display: block; width: 100%; height: auto;
     }
+    .welcome-scene + .cluster,
+    .welcome-scene + .cluster:has(.hanger) { padding-top: clamp(2.8rem, 6vw, 4.6rem); }
     .paths .ln path { stroke: rgba(255, 232, 186, .34); }
     .paths .ln .stub { stroke: var(--teal); }
     .paths .node { fill: var(--amber); }
@@ -1486,6 +1488,10 @@
       <img class="vapor" src="assets/images/steam-corner-a.png" alt="" style="right:-7%;top:-4%;width:min(16rem,42vw);opacity:.13;transform:scale(-1,-1);">
       <div class="glow" style="background:radial-gradient(72% 30% at 34% 32%, rgba(45,205,196,.24), rgba(45,205,196,0) 72%);"></div>
 
+      <figure class="rail welcome-scene">
+        <img src="assets/images/look/welcome-workshop-ink.webp" alt="" data-alt="workshop.scene_alt" width="2800" height="1535" loading="lazy">
+      </figure>
+
       <div class="rail cluster">
         <div class="card welcome">
           <div class="hanger" aria-hidden="true">
@@ -1497,18 +1503,9 @@
         </div>
       </div>
 
-      <figure class="rail welcome-scene">
-        <img src="assets/images/look/welcome-workshop-ink.webp" alt="" data-alt="workshop.scene_alt" width="2800" height="1535" loading="lazy">
-      </figure>
-
       <section class="scene bench-scene" id="bench">
         <div class="pin">
           <div class="rail bench-grid">
-            <div class="bench-copy">
-              <h2 class="dark-head" data-text="bench.heading"></h2>
-              <p class="dark-deck" data-text="bench.deck"></p>
-              <ol class="build-steps" data-steps="bench.steps"></ol>
-            </div>
             <div class="bench" aria-hidden="true">
               <div class="lamp"></div>
               <div class="bench-shadow"></div>
@@ -1517,6 +1514,11 @@
               <img class="bot-frame" src="assets/images/bot/bot-4-bellows.png" alt="" style="--w:83.4%">
               <img class="bot-frame" src="assets/images/bot/bot-1-core.png" alt="" style="--w:89.9%">
               <img class="puff" src="assets/images/steam-plume-a.png" alt="">
+            </div>
+            <div class="bench-copy">
+              <h2 class="dark-head" data-text="bench.heading"></h2>
+              <p class="dark-deck" data-text="bench.deck"></p>
+              <ol class="build-steps" data-steps="bench.steps"></ol>
             </div>
           </div>
         </div>
