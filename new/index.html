@@ -928,28 +928,29 @@
       position: absolute; left: 14%; right: 14%; bottom: 6%; height: 9%;
       background: radial-gradient(closest-side, rgba(0, 0, 0, .55), transparent);
     }
-    /* The painting that is leaving stays fully painted underneath (.hold).
-       Fading it out, or animating blur and brightness, flashes a white frame
-       on some phones before the next image is ready. */
+    /* One painting at a time. The one leaving fades out and is hidden
+       before the next one fades in, so the two never sit on top of each other.
+       No blur or brightness: that flashed a white frame on some phones. */
     .bot-frame {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
       opacity: 0;
+      visibility: hidden;
       z-index: 1;
-      transform: scale(.97);
       background: transparent;
       transition: none;
       pointer-events: none;
     }
-    .bot-frame.hold {
-      opacity: 1;
-      transform: none;
-    }
     .bot-frame.on {
       opacity: 1;
+      visibility: visible;
       z-index: 2;
-      transform: none;
-      transition: opacity .4s ease, transform .55s ease;
+    }
+    .bench.swap .bot-frame {
+      transition: opacity .28s ease, visibility 0s linear .28s;
+    }
+    .bench.swap .bot-frame.on {
+      transition: opacity .28s ease .28s, visibility 0s linear .28s;
     }
     .puff {
       position: absolute; left: 22%; bottom: 18%; width: 56%;
@@ -961,7 +962,7 @@
       100% { opacity: 0; transform: translateY(-28%) scale(1.25); }
     }
     @media (prefers-reduced-motion: reduce) {
-      .bot-frame, .bot-frame.on, .bot-frame.hold { transform: none; transition: none; }
+      .bot-frame, .bot-frame.on, .bench.swap .bot-frame, .bench.swap .bot-frame.on { transition: none; }
       .puff.go { animation: none; }
     }
     /* Phones keep the whole bench on one screen: the painting on top, the
@@ -1766,7 +1767,7 @@
 
   </div>
 
-  <script src="assets/js/scenes.js?v=20"></script>
+  <script src="assets/js/scenes.js?v=21"></script>
   <script src="assets/js/page.js?v=25"></script>
 </body>
 </html>
