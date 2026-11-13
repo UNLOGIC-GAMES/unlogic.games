@@ -160,7 +160,8 @@ features:
       image: world.jpg
       text: The shop, the staff and the city keep moving without ever needing a server. Characters talk with their own personality and answer you in real time, powered by our Dynamic Narrative Assembler, a set of systems, including a fine-tuned local AI, that runs entirely on your device.
     - title: Lead the Workshop
-      image: workshop-lead.jpg
+      image: workshop-lead-punch.jpg
+      ratio: 1024 / 431
       text: "Run the daily shop: choose builds and jobs, negotiate suppliers, manage and train workers, and upgrade the workshop. Coordinate multi-step steambot work across stations, then balance the day cycle of crafting, repairs, customer tasks, cleanup, minigames, and stamina/resources."
     - title: Every word counts
       images:
