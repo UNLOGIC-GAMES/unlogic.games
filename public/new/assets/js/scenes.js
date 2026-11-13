@@ -332,11 +332,14 @@
       stage = i;
       frames.forEach(function (f, k) {
         f.classList.toggle("on", k === i);
-        f.classList.toggle("hold", prev >= 0 && k === prev);
+        f.classList.remove("hold");
       });
       steps.forEach(function (s, k) { s.classList.toggle("on", k === i); });
       var stand = bench.querySelector(".bench");
-      if (stand) stand.style.setProperty("--stage", String(i));
+      if (stand) {
+        stand.classList.toggle("swap", prev >= 0);
+        stand.style.setProperty("--stage", String(i));
+      }
       if (puff && forward && i > 0) {
         puff.classList.remove("go");
         void puff.offsetWidth;
