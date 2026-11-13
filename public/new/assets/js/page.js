@@ -242,13 +242,11 @@
       var alt = escapeHtml(item.title, true);
       var many = images.length > 1;
       var tight = item.zoom || item.focus;
-      var shotStyle = "";
-      if (tight) {
-        shotStyle = " style=\"";
-        if (item.zoom) shotStyle += "--zoom:" + escapeHtml(String(item.zoom), true) + ";";
-        if (item.focus) shotStyle += "--focus:" + escapeHtml(item.focus, true) + ";";
-        shotStyle += "\"";
-      }
+      var styles = [];
+      if (item.zoom) styles.push("--zoom:" + escapeHtml(String(item.zoom), true));
+      if (item.focus) styles.push("--focus:" + escapeHtml(item.focus, true));
+      if (item.ratio) styles.push("--ratio:" + escapeHtml(String(item.ratio), true));
+      var shotStyle = styles.length ? " style=\"" + styles.join(";") + ";\"" : "";
       var shots = images.map(function (image, i) {
         var src = escapeHtml("assets/images/" + image, true);
         var on = many && i === 0 ? " on" : "";
