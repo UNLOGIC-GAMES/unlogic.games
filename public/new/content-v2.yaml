@@ -199,14 +199,16 @@ look:
       text: "Steambots, born of steam and psycho-alchemy, are what the shop builds and what Lightower knows you by. You take them in broken, choose the job, and hand them back changed. They move from the bench to the street, and from the street into tomorrow's Gazette. The workshop is known by the machines it lets out the door. People in Lightower judge the shop by what walks back out."
 
 roadmap:
-  heading: Roadmap
+  heading: Release Plan
   items:
     - year: "2027"
-      text: Early Access mid 2027. Version 1.0 early 2028.
+      text: Early access
     - year: "2028"
-      text: Consoles follow late in the year, when Version 1.0 ships as a premium, single-player game that runs fully offline.
+      text: Console port
     - year: "2029"
-      text: Free content and expansions through the end of 2029.
+      text: Free content and free expansions.
+    - year: "2030"
+      text: Who knows...
 
 contact:
   heading: Contact
