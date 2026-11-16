@@ -246,7 +246,8 @@
     .timeline {
       position: relative;
       list-style: none;
-      margin: 1.5rem 0 0;
+      width: min(42rem, 100%);
+      margin: 1.5rem auto 0;
       padding: 0.2rem 0 2.2rem;
     }
     .timeline::before {
@@ -1250,34 +1251,8 @@
       .cols { column-count: 1; }
       .concept,
       .concept:nth-child(even) { flex-direction: column; }
-      .timeline {
-        --year-col: 5.2rem;
-        --spine-gutter: 2.2rem;
-        --spine-x: calc(var(--year-col) + (var(--spine-gutter) / 2));
-      }
-      .timeline::before { left: var(--spine-x); margin-left: -0.21rem; }
-      .timeline::after { left: var(--spine-x); }
-      .mile {
-        grid-template-columns: var(--year-col) var(--spine-gutter) minmax(0, 1fr);
-        gap: 0.9rem 0;
-        align-items: start;
-      }
-      .mile::after { left: var(--spine-x); }
-      .mile:nth-child(odd) .year,
-      .mile:nth-child(even) .year { order: 0; text-align: left; }
-      .mile .year {
-        grid-column: 1;
-        white-space: nowrap;
-        line-height: 1.15;
-      }
-      .mile:nth-child(odd) p,
-      .mile:nth-child(even) p {
-        order: 0;
-        text-align: left;
-        grid-column: 3;
-        min-width: 0;
-        padding-left: 0.15rem;
-      }
+      .timeline { width: min(36rem, 100%); }
+      .mile { gap: 0.8rem 1rem; }
       .site-foot p { font-size: 0.92rem; }
       /* The cover is exactly one screen. The cast (170% wide: ~140vw tall,
          painted part ~103vw) is lifted off the bottom by --lift so less
@@ -1537,7 +1512,7 @@
 
   </style>
 </head>
-<body data-content="content-v2.yaml?v=17">
+<body data-content="content-v2.yaml?v=18">
   <div id="gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
     <form id="gate-form">
       <p id="gate-title">SteamDreams</p>
