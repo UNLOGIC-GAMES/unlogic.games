@@ -187,16 +187,16 @@ look:
   items:
     - title: Setting
       image: look/setting-lineup.jpg
-      text: "A cozy steampunk world of steam + psycho-alchemy, centered on Lightower City and its goblin workshop culture, with a multi-race cast (goblins, dwarves, humans, elves, and more)."
+      text: "A cozy steampunk world of steam and psycho-alchemy, centered on Lightower City and the goblin workshops that keep it running. Three siblings open a shop and take whoever knocks: goblins, dwarves, humans, elves, and the rest of the street. Neighbours, suppliers, and strangers share the counter. The city is busy, eccentric, and it watches how you work."
     - title: Tone
       image: look/tone-grindel-close.jpg
-      text: Warm, charming, and humorous, with systemic emotional depth beneath the coziness.
+      text: "Warm, charming, and humorous, with a real bite under the coziness. Customers can be kind or a complete bastard, and so can you. What you say changes the price, the trust, and how they greet you tomorrow. A soft answer and a sharp one leave different people at the door. Lightower remembers the mood of the shop, not just the finished job. The coziness stays. So do the consequences."
     - title: Art direction
       image: workshop-day.png
-      text: Painterly, hand-crafted aesthetic with strong material definition and a warm, cozy lighting filter; all concept art, music, 3D, and UI created in-house (no generative-AI art assets).
+      text: "Painterly and made by hand, with clear materials and a warm, cozy light on brass, brick, and steam. Concept art, music, 3D, and the interface are made in-house, with no generative-AI art. The local AI does not generate the pictures, the characters, or the rooms. If it is on screen, someone on the team drew it, built it, or lit it. The warmth is painted, not generated."
     - title: Identity
       image: look/identity-chassis.jpg
-      text: Steambots, born of steam and psycho-alchemy, are the central visual and narrative differentiator of the IP.
+      text: "Steambots, born of steam and psycho-alchemy, are what the shop builds and what Lightower knows you by. You take them in broken, choose the job, and hand them back changed. They move from the bench to the street, and from the street into tomorrow's Gazette. The workshop is known by the machines it lets out the door. People in Lightower judge the shop by what walks back out."
 
 roadmap:
   heading: Roadmap
